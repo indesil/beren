@@ -1,0 +1,40 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="validations" type="validationsType"/>
+
+    <xs:complexType name="validationsType">
+        <xs:sequence>
+            <xs:element name="definition" type="definitionType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="definitionType">
+        <xs:sequence>
+            <xs:element name="validate" type="validateType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="class" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="validateType">
+        <xs:sequence>
+            <xs:element name="field" type="fieldType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="defaultValidator" type="xs:string"/>
+        <xs:attribute name="mode" use="required" type="modeEnumType"/>
+    </xs:complexType>
+
+    <xs:simpleType name="modeEnumType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EACH"/>
+            <xs:enumeration value="ALL"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="fieldType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required"/>
+                <xs:attribute name="validator" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+</xs:schema>

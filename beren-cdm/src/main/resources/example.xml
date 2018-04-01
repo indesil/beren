@@ -1,0 +1,15 @@
+<validations>
+    <definition class="pathToClass">
+        <validate defaultValidator="isNull" mode="EACH">
+            <field name="a"/>
+            <field name="b"/>
+            <field name="c"/>
+        </validate>
+        <!--jak generowac message dla ALL???-->
+        <validate defaultValidator="isEmpty" mode="ALL">
+            <field name="d"/>
+            <field name="e" validator="lessThan(5)"/>
+            <field name="f" validator="between(5, 10)"/>
+        </validate>
+    </definition>
+</validations>
