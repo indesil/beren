@@ -2,16 +2,18 @@ package pl.indesil.tools.beren.model;
 
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ToString
 @Setter
 @Getter
 @Builder
 @EqualsAndHashCode
 public class ValidationResult {
-    private String classSimpleName;
-    private String classFullName;
-    private String fieldName;
-    private String fieldPath;
-    private String validationMessage;
+    private List<ClassViolationInfo> classViolationInfo = new ArrayList<>();
 
+    public boolean isValidationSuccessful() {
+        return classViolationInfo.isEmpty();
+    }
 }

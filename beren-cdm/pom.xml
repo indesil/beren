@@ -7,9 +7,16 @@
     <parent>
         <groupId>pl.indesil.tools</groupId>
         <artifactId>beren</artifactId>
-        <version/>
+        <version>0.0.1</version>
     </parent>
 
     <artifactId>beren-cdm</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

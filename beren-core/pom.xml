@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>pl.indesil.tools</groupId>
-        <version/>
+        <version>0.0.1</version>
         <artifactId>beren</artifactId>
     </parent>
 

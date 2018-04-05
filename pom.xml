@@ -3,7 +3,7 @@
     <groupId>pl.indesil.tools</groupId>
     <artifactId>beren</artifactId>
     <version>0.0.1</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <properties>
         <jdk.version>1.8</jdk.version>

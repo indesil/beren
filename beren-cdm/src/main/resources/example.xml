@@ -1,15 +1,22 @@
-<validations>
+<definitions failFast="false">
     <definition class="pathToClass">
-        <validate defaultValidator="isNull" mode="EACH">
-            <field name="a"/>
+        //single violation czyli po 1 per field
+        <valdiateEach defaultValidator="isNull" defaultMessageFormat="Invalid field at path #fieldPath - #fieldName may not be empty!">
+            <field name="a" validator="customValidator" messageFormat="This is some different format message #customParam"/>
             <field name="b"/>
             <field name="c"/>
-        </validate>
-        <!--jak generowac message dla ALL???-->
-        <validate defaultValidator="isEmpty" mode="ALL">
-            <field name="d"/>
-            <field name="e" validator="lessThan(5)"/>
-            <field name="f" validator="between(5, 10)"/>
-        </validate>
+        </valdiateEach>
+
+        //groupViolation czyli 1 per taka definicja
+        <validateGroup defaultValidator="isNull" messageFormat="#fieldName[id1] must not be null and #fieldName[id2] must be something...">
+            <field id="id1" name="d"/>
+            <field id="id2" name="e" validator="lessThan(5)"/>
+            <field id="id3" name="f" validator="between(5, 10)"/>
+        </validateGroup>
+
+        //kolejne
+        <validateGroup>
+
+        </validateGroup>
     </definition>
-</validations>
+</definitions>
