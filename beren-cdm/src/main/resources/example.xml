@@ -14,7 +14,7 @@
             <field id="id3" name="f" validator="between(5, 10)"/>
         </validateGroup>
 
-        //kolejne
+        //kolejne!
         <validateGroup>
 
         </validateGroup>
