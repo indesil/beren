@@ -1,22 +1,45 @@
 <definitions failFast="false">
-    <definition class="pathToClass">
-        //single violation czyli po 1 per field
-        <valdiateEach defaultValidator="isNull" defaultMessageFormat="Invalid field at path #fieldPath - #fieldName may not be empty!">
-            <field name="a" validator="customValidator" messageFormat="This is some different format message #customParam"/>
-            <field name="b"/>
-            <field name="c"/>
-        </valdiateEach>
+    <definition class="class1" defaultValidator="isNull" failFast="false"
+                defaultFieldMessage="Invalid field at path #fieldPath - #fieldName may not be empty!">
+        <field name="a" validator="customValidator" message="This is some different format message #customParam"/>
+        <field name="b"/>
+        <field name="c"/>
+        <group defaultValidator="isNull" failFast="true"
+               defaultFieldMessage="#fieldName must not be null"
+               groupMessage="All fields must not be null but there was [#summarizedMessages]">
+            <field name="d"/>
+            <field name="e" validator="lessThan(5)" message="#fieldName must be less than #minValue but was #fieldValue"/>
+            <field name="f" validator="between(5, 10)" message="#fieldName "/>
+            <field type="java.lang.Integer" validator="forAllIntegers" message="#fieldName is not valid integer!"/>
+        </group>
+        <group defaultValidator="forAllIntegers"
+               defaultFieldMessage="#fieldName is not valid integer!"
+               groupMessage="all integers of #className must not be valid!">
+            <field type="java.lang.Integer" validator="forAllIntegers"/>
+        </group>
+    </definition>
 
-        //groupViolation czyli 1 per taka definicja
-        <validateGroup defaultValidator="isNull" messageFormat="#fieldName[id1] must not be null and #fieldName[id2] must be something...">
-            <field id="id1" name="d"/>
-            <field id="id2" name="e" validator="lessThan(5)"/>
-            <field id="id3" name="f" validator="between(5, 10)"/>
-        </validateGroup>
+    <definition class="class2" failFast="false">
+        <field pattern=".*" excludeTypes="java.lang.Integer, java.lang.Double, java.lang.Boolean" validator="everyFieldWillMatchThis!"/>
+        <field type="java.lang.Integer" validator="ThisValidatorWillTakeCareOfIntegers!"/>
+        <field type="java.lang.Double" validator="AndThisWillTakeCareOfDoubles!"/>
+    </definition>
 
-        //kolejne!!
-        <validateGroup>
+    <definition class="class3" id="class3ValidatorId">
+        <field name="fieldOfTypeString" validator="validatorForThisParticularString"/>
+        <field type="java.lang.String" validator="validatorForAllOtherStrings"/>
+    </definition>
 
-        </validateGroup>
+    <definition class="class4">
+        <field pattern="^startWith$" validator="validatorForThisPattern"/>
+        <field pattern=".*" validator="everyOtherFieldWillMatchThis!"/>
+        <!--no other declaration pass this point will be used for validation !!!-->
+        <field type="java.lang.String" validator="forAllStrings"/>
+    </definition>
+
+    <definition class="class5">
+        <!--validate field of type class3 with generated validator above. This is default behaviour!-->
+        <field type="class3" validator="#class3ValidatorId"/>
+        <field type="class4" validator="customValidatorForClass4"/>
     </definition>
 </definitions>
