@@ -1,46 +1,24 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>pl.jlabs.validator</groupId>
-    <artifactId>beren</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <groupId>pl.jlabs.beren</groupId>
+    <artifactId>beren-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
         <jdk.version>1.8</jdk.version>
         <junit.version>4.11</junit.version>
-        <log4j.version>2.11.0</log4j.version>
-        <java.writer.version>2.5.1</java.writer.version>
+        <java.poet.version>1.11.1</java.poet.version>
     </properties>
 
     <modules>
         <module>beren-core</module>
         <module>beren-compiler</module>
-        <module>beren-model</module>
+        <module>examples</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.16.20</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

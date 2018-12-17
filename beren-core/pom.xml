@@ -5,27 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>pl.jlabs.validator</groupId>
-        <version>1.0.0-SNAPSHOT</version>
-        <artifactId>beren</artifactId>
+        <groupId>pl.jlabs.beren</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+        <artifactId>beren-parent</artifactId>
     </parent>
 
     <artifactId>beren-core</artifactId>
 
     <dependencies>
-        <!-- scope provided because the processor is only needed for the compiler -->
-        <dependency>
-            <groupId>fr.xebia.extras</groupId>
-            <artifactId>selma-processor</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
 
-        <!-- This is the only real dependency you will have in your binaries -->
-        <dependency>
-            <groupId>fr.xebia.extras</groupId>
-            <artifactId>selma</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 </project>
