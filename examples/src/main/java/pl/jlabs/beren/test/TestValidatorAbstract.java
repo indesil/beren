@@ -11,20 +11,23 @@ import pl.jlabs.beren.test.model.*;
 //dodac moze jeszcze cos takiego jak register czyli np
 //@Validator(register="pl.jlabs.beren.custom.Validators")
 //@I tam bedziemy mieli zestaw @Idkow albo metod do zeskanowania jako validatorow
-@Validator
-public interface TestValidator {
+//@Validator
+public abstract class TestValidatorAbstract {
 
     @Validate({
             @Field(name = "source", operation = "neitherOf(SarumanGifts, MordorGmbH)"),
             @Field(name = "requestId", operation = "biggerThan(0)"),
             @Field(name = "orders", operation = "validateOrders")
     })
-    ValidationResults validateRequest(OrdersCreateRequest request);
+    abstract ValidationResults validateRequest(OrdersCreateRequest request);
 
     @Validate({
             @Field(name = "invoiceMap", operation = "onEveryEntryValue(invoiceValidation)")
     })
-    ValidationResults validateOrders(Orders orders);
+    abstract ValidationResults validateOrders(Orders orders);
+
+    public TestValidatorAbstract(String dadas) {
+    }
 
     @Id("invoiceValidation")
     @Validate({
@@ -37,15 +40,15 @@ public interface TestValidator {
         @Field(name = "customer", operation = "validateCustomer")
 
     })
-    ValidationResults validateEntryValue(Invoice invoice);
+    abstract ValidationResults validateEntryValue(Invoice invoice);
 
     @Id("myCustomInlineValidation")
-    default boolean customInlineValidator(String paymentForm, boolean paid) {
+    boolean customInlineValidator(String paymentForm, boolean paid) {
         return "cash".equals(paymentForm) && paid;
     }
 
     @Id("myCustomInlineValidation2")
-    default boolean customInlineValidator2(Invoice invoice, OperationContext operationContext) {
+    boolean customInlineValidator2(Invoice invoice, OperationContext operationContext) {
         Invoice validationObject = operationContext.getValidationObject(Invoice.class);
         operationContext.addPlaceHolder("myPlaceHolder", "It's all wrong!");
         return invoice.getPaymentDate() != null && validationObject.isPaid();
@@ -56,9 +59,9 @@ public interface TestValidator {
             @Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${param0} must not occurs with ${field1}"),
             @Field(name = "address", operation = "addressIsValid", message = "Invalid address")
     })
-    ValidationResults validateCustomer(Customer customer);
+    abstract ValidationResults validateCustomer(Customer customer);
 
-    default boolean addressIsValid(Address address) {
+    boolean addressIsValid(Address address) {
         return address.getAddressLine() != null && address.getCity() != null && address.getCountry() != null && address.getHouseNumber() > 0;
     }
 
