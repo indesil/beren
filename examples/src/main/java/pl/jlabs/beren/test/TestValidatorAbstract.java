@@ -1,9 +1,6 @@
 package pl.jlabs.beren.test;
 
-import pl.jlabs.beren.annotations.Field;
-import pl.jlabs.beren.annotations.Id;
-import pl.jlabs.beren.annotations.Validate;
-import pl.jlabs.beren.annotations.Validator;
+import pl.jlabs.beren.annotations.*;
 import pl.jlabs.beren.model.OperationContext;
 import pl.jlabs.beren.model.ValidationResults;
 import pl.jlabs.beren.test.model.*;
@@ -11,8 +8,17 @@ import pl.jlabs.beren.test.model.*;
 //dodac moze jeszcze cos takiego jak register czyli np
 //@Validator(register="pl.jlabs.beren.custom.Validators")
 //@I tam bedziemy mieli zestaw @Idkow albo metod do zeskanowania jako validatorow
-@Validator
+@Validator(breakingStrategy = BreakingStrategy.SUMMARIZE_ALL)
 public abstract class TestValidatorAbstract {
+
+    public TestValidatorAbstract() {
+    }
+
+    private TestValidatorAbstract(String dadas) {
+    }
+
+    public TestValidatorAbstract(int dasd, float kkk, String aaa, Object o) {
+    }
 
     @Validate({
             @Field(name = "source", operation = "neitherOf(SarumanGifts, MordorGmbH)"),
@@ -25,15 +31,6 @@ public abstract class TestValidatorAbstract {
             @Field(name = "invoiceMap", operation = "onEveryEntryValue(invoiceValidation)")
     })
     abstract ValidationResults validateOrders(Orders orders);
-
-    public TestValidatorAbstract() {
-    }
-
-    private TestValidatorAbstract(String dadas) {
-    }
-
-    public TestValidatorAbstract(int dasd, float kkk, String aaa, Object o) {
-    }
 
     @Id("invoiceValidation")
     @Validate({

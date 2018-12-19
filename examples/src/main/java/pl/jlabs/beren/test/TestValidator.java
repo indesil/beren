@@ -3,14 +3,14 @@ package pl.jlabs.beren.test;
 import pl.jlabs.beren.annotations.Field;
 import pl.jlabs.beren.annotations.Id;
 import pl.jlabs.beren.annotations.Validate;
+import pl.jlabs.beren.annotations.Validator;
 import pl.jlabs.beren.model.OperationContext;
-import pl.jlabs.beren.model.ValidationResults;
 import pl.jlabs.beren.test.model.*;
 
 //dodac moze jeszcze cos takiego jak register czyli np
 //@Validator(register="pl.jlabs.beren.custom.Validators")
 //@I tam bedziemy mieli zestaw @Idkow albo metod do zeskanowania jako validatorow
-//@Validator
+@Validator
 public interface TestValidator {
 
     @Validate({
@@ -18,12 +18,12 @@ public interface TestValidator {
             @Field(name = "requestId", operation = "biggerThan(0)", message = "requestId should be bigger than 0!"),
             @Field(name = "orders", operation = "validateOrders")
     })
-    ValidationResults validateRequest(OrdersCreateRequest request);
+    void validateRequest(OrdersCreateRequest request);
 
     @Validate({
             @Field(name = "invoiceMap", operation = "onEveryEntryValue(invoiceValidation)")
     })
-    ValidationResults validateOrders(Orders orders);
+    void validateOrders(Orders orders);
 
     @Id("invoiceValidation")
     @Validate({
@@ -36,7 +36,7 @@ public interface TestValidator {
         @Field(name = "customer", operation = "validateCustomer")
 
     })
-    ValidationResults validateEntryValue(Invoice invoice);
+    void validateEntryValue(Invoice invoice);
 
     @Id("myCustomInlineValidation")
     default boolean customInlineValidator(String paymentForm, boolean paid) {
@@ -56,7 +56,7 @@ public interface TestValidator {
             @Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${param0} must not occurs with ${field1}"),
             @Field(name = "address", operation = "addressIsValid", message = "Invalid address")
     })
-    ValidationResults validateCustomer(Customer customer);
+    void validateCustomer(Customer customer);
 
     default boolean addressIsValid(Address address) {
         return address.getAddressLine() != null && address.getCity() != null && address.getCountry() != null && address.getHouseNumber() > 0;

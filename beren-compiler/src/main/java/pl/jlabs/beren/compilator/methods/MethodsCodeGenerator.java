@@ -1,8 +1,8 @@
 package pl.jlabs.beren.compilator.methods;
 
 import com.squareup.javapoet.*;
+import pl.jlabs.beren.annotations.BreakingStrategy;
 import pl.jlabs.beren.compilator.configuration.BerenConfig;
-import pl.jlabs.beren.model.ValidationResults;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -46,7 +46,7 @@ public class MethodsCodeGenerator {
     private MethodSpec createConstructor(ExecutableElement constructor) {
         return MethodSpec.constructorBuilder()
                 .addAnnotations(rewriteAnnotations(constructor.getAnnotationMirrors()))
-                .addParameters(rewriteParameters(constructor.getParameters()))
+                .addParameters(getParameters(constructor.getParameters()))
                 .addStatement(createSuperConstructorCall((List<VariableElement>) constructor.getParameters()))
                 .addModifiers(constructor.getModifiers())
                 .build();
@@ -56,7 +56,7 @@ public class MethodsCodeGenerator {
         return annotationMirrors.stream().map(annotation -> AnnotationSpec.get(annotation)).collect(toList());
     }
 
-    private List<ParameterSpec> rewriteParameters(List<? extends VariableElement> parameters) {
+    private List<ParameterSpec> getParameters(List<? extends VariableElement> parameters) {
         return parameters.stream().map(param -> ParameterSpec.get(param)).collect(toList());
     }
 
@@ -66,35 +66,38 @@ public class MethodsCodeGenerator {
     }
 
     private MethodSpec createMethod(ExecutableElement methodToImplement, TypeMethods typeMethods) {
-        MethodSpec.Builder builder = MethodSpec
+        return MethodSpec
                 .methodBuilder(methodToImplement.getSimpleName().toString())
-                .returns(ValidationResults.class);
-
-        addModifiers(methodToImplement.getModifiers(), builder);
-        addParameters(methodToImplement.getParameters(), builder);
-        addThrows(methodToImplement.getThrownTypes(), builder);
-        addCodeBlock(methodToImplement, typeMethods, builder);
-
-        return builder.build();
+                .addParameters(getParameters(methodToImplement.getParameters()))
+                .addExceptions(getThrows(methodToImplement.getThrownTypes()))
+                .addCode(writeMethodBody(methodToImplement, typeMethods))
+                .addModifiers(getModifiers(methodToImplement.getModifiers()))
+                .returns(getReturnType(methodToImplement))
+                .build();
     }
 
-    private void addModifiers(Set<Modifier> methodModifiers, MethodSpec.Builder builder) {
+    private Modifier[] getModifiers(Set<Modifier> methodModifiers) {
         if(methodModifiers.contains(Modifier.PUBLIC)) {
-            builder.addModifiers(Modifier.PUBLIC);
+            return new Modifier[]{Modifier.PUBLIC};
         } else if(methodModifiers.contains(Modifier.PROTECTED)) {
-            builder.addModifiers(Modifier.PROTECTED);
+            return new Modifier[]{Modifier.PROTECTED};
         }
+
+        return new Modifier[0];
     }
 
-    private void addParameters(List<? extends VariableElement> parameters, MethodSpec.Builder builder) {
-        parameters.forEach(param -> builder.addParameter(ParameterSpec.get(param)));
+    private List<TypeName> getThrows(List<? extends TypeMirror> thrownTypes) {
+        return thrownTypes.stream().map(TypeName::get).collect(toList());
     }
 
-    private void addThrows(List<? extends TypeMirror> thrownTypes, MethodSpec.Builder builder) {
-        thrownTypes.forEach(exception -> builder.addException(TypeName.get(exception)));
+    private CodeBlock writeMethodBody(ExecutableElement methodToImplement, TypeMethods typeMethods) {
+        if(typeMethods.getBreakingStrategy().equals(BreakingStrategy.THROW_ON_FIRST)) {
+            return CodeBlock.builder().build();
+        }
+        return CodeBlock.builder().addStatement("return null").build();
     }
 
-    private void addCodeBlock(ExecutableElement methodToImplement, TypeMethods typeMethods, MethodSpec.Builder builder) {
-        builder.addStatement("return null");
+    private TypeName getReturnType(ExecutableElement methodToImplement) {
+        return TypeName.get(methodToImplement.getReturnType());
     }
 }

@@ -1,7 +1,7 @@
 package pl.jlabs.beren.compilator;
 
 import pl.jlabs.beren.annotations.Validator;
-import pl.jlabs.beren.compilator.methods.MethodsExtractor;
+import pl.jlabs.beren.compilator.utils.MethodsExtractor;
 import pl.jlabs.beren.compilator.methods.TypeMethods;
 
 import javax.annotation.processing.AbstractProcessor;
