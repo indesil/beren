@@ -1,2 +1,2 @@
 # beren
-Dynamic validator code generator
+Validators code generator
