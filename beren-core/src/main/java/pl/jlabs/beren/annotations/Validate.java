@@ -5,5 +5,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 public @interface Validate {
+    boolean nullable() default false;
     Field[] value();
 }

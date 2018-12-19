@@ -1,10 +1,11 @@
 package pl.jlabs.beren.compilator;
 
 import pl.jlabs.beren.annotations.Validator;
-import pl.jlabs.beren.compilator.methods.ClassMethods;
 import pl.jlabs.beren.compilator.methods.MethodsExtractor;
+import pl.jlabs.beren.compilator.methods.TypeMethods;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.Element;
@@ -16,9 +17,19 @@ import java.util.Set;
 import static java.lang.String.format;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.MANDATORY_WARNING;
+import static pl.jlabs.beren.compilator.configuration.ConfigurationLoader.loadConfigurations;
 
 @SupportedAnnotationTypes({"pl.jlabs.beren.annotations.Validator"})
 public class AnnotationProcessor extends AbstractProcessor {
+    private ClassCodeGenerator classCodeGenerator;
+
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        classCodeGenerator = new ClassCodeGenerator(processingEnv, loadConfigurations());
+        processingEnv.getMessager().printMessage(MANDATORY_WARNING, "Annotation processor init");
+    }
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         processingEnv.getMessager().printMessage(MANDATORY_WARNING, "Beren generating validator code");
@@ -33,14 +44,14 @@ public class AnnotationProcessor extends AbstractProcessor {
     private void generateValidatorCode(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Set<? extends Element> validatorElements = roundEnv.getElementsAnnotatedWith(Validator.class);
         processingEnv.getMessager().printMessage(MANDATORY_WARNING, "number of validator classes " + validatorElements.size());
-        for (Element element : validatorElements) {
+        for (Element typeElement : validatorElements) {
             try {
-                if(isEitherInterfaceOrClass(element.getKind())) {
-                    ClassMethods classMethods = MethodsExtractor.extractMethods(element, processingEnv);
-                    processingEnv.getMessager().printMessage(MANDATORY_WARNING, format("generating validator for %s", element.toString()));
-                    ClassCodeGenerator.generateJavaClass(element, classMethods, processingEnv);
+                if(isEitherInterfaceOrClass(typeElement.getKind())) {
+                    TypeMethods typeMethods = MethodsExtractor.extractMethods((TypeElement) typeElement, processingEnv);
+                    processingEnv.getMessager().printMessage(MANDATORY_WARNING, format("generating validator for %s", typeElement.toString()));
+                    classCodeGenerator.generateJavaClass(typeElement, typeMethods);
                 } else {
-                    processingEnv.getMessager().printMessage(ERROR, format("Type %s is not class nor interface!",  element.toString()));
+                    processingEnv.getMessager().printMessage(ERROR, format("Type %s is not class nor interface!",  typeElement.toString()));
                 }
             } catch (IOException e) {
                 e.printStackTrace();

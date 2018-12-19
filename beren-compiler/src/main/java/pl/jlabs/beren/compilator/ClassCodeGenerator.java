@@ -4,8 +4,9 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import pl.jlabs.beren.compilator.methods.ClassMethods;
+import pl.jlabs.beren.compilator.configuration.BerenConfig;
 import pl.jlabs.beren.compilator.methods.MethodsCodeGenerator;
+import pl.jlabs.beren.compilator.methods.TypeMethods;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -15,29 +16,37 @@ import javax.lang.model.element.PackageElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.List;
 
 public class ClassCodeGenerator {
 
-    public static void generateJavaClass(Element element, ClassMethods classMethods, ProcessingEnvironment processingEnv) throws IOException {
-        String validatorClass = element.toString();
-        PackageElement elementPackage = processingEnv.getElementUtils().getPackageOf(element);
-        TypeSpec validatorJava = createJavaType(element, MethodsCodeGenerator.generateMethodsCode());
+    private ProcessingEnvironment processingEnv;
+    private MethodsCodeGenerator methodsCodeGenerator;
+
+    public ClassCodeGenerator(ProcessingEnvironment processingEnv, BerenConfig berenConfig) {
+        this.processingEnv = processingEnv;
+        this.methodsCodeGenerator = new MethodsCodeGenerator(processingEnv, berenConfig);
+    }
+
+    public void generateJavaClass(Element typeElement, TypeMethods typeMethods) throws IOException {
+        String validatorClass = typeElement.toString();
+        PackageElement elementPackage = processingEnv.getElementUtils().getPackageOf(typeElement);
+        TypeSpec validatorJava = createJavaType(typeElement, methodsCodeGenerator.generateMethodsCode(typeMethods));
         JavaFile javaFile = JavaFile.builder(elementPackage.toString(), validatorJava)
                 .build();
 
-        JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(validatorClass + "Impl", element);
+        JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(validatorClass + "Impl", typeElement);
 
         Writer out = sourceFile.openWriter();
         javaFile.writeTo(out);
         out.close();
     }
 
-    private static TypeSpec createJavaType(Element element, List<MethodSpec> methods) {
+    private TypeSpec createJavaType(Element element, List<MethodSpec> methods) {
         TypeSpec.Builder builder = TypeSpec.classBuilder(element.getSimpleName().toString() + "Impl")
                 .addModifiers(Modifier.PUBLIC)
                 .addMethods(methods);
+
         if(element.getKind().equals(ElementKind.INTERFACE)) {
             builder.addSuperinterface(TypeName.get(element.asType()));
         } else {

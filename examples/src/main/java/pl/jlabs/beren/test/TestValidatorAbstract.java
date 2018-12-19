@@ -11,7 +11,7 @@ import pl.jlabs.beren.test.model.*;
 //dodac moze jeszcze cos takiego jak register czyli np
 //@Validator(register="pl.jlabs.beren.custom.Validators")
 //@I tam bedziemy mieli zestaw @Idkow albo metod do zeskanowania jako validatorow
-//@Validator
+@Validator
 public abstract class TestValidatorAbstract {
 
     @Validate({
@@ -26,7 +26,13 @@ public abstract class TestValidatorAbstract {
     })
     abstract ValidationResults validateOrders(Orders orders);
 
-    public TestValidatorAbstract(String dadas) {
+    public TestValidatorAbstract() {
+    }
+
+    private TestValidatorAbstract(String dadas) {
+    }
+
+    public TestValidatorAbstract(int dasd, float kkk, String aaa, Object o) {
     }
 
     @Id("invoiceValidation")
@@ -63,6 +69,11 @@ public abstract class TestValidatorAbstract {
 
     boolean addressIsValid(Address address) {
         return address.getAddressLine() != null && address.getCity() != null && address.getCountry() != null && address.getHouseNumber() > 0;
+    }
+
+    @Override
+    public String toString() {
+        return "TestValidatorAbstract{}";
     }
 
     //Być moze będzie sie tak dało zrobić ale w MVP3? Trzeba gdzies to zapisywać

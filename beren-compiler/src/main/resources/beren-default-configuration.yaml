@@ -1,0 +1,3 @@
+operationsMappings:
+  neitherOf(a[]): pl.jlabs.beren.operations.Operations.neitherOf(a[])
+  biggerThan(var): pl.jlabs.beren.operations.Operations.biggerThan(var)

@@ -3,7 +3,6 @@ package pl.jlabs.beren.test;
 import pl.jlabs.beren.annotations.Field;
 import pl.jlabs.beren.annotations.Id;
 import pl.jlabs.beren.annotations.Validate;
-import pl.jlabs.beren.annotations.Validator;
 import pl.jlabs.beren.model.OperationContext;
 import pl.jlabs.beren.model.ValidationResults;
 import pl.jlabs.beren.test.model.*;
@@ -11,12 +10,12 @@ import pl.jlabs.beren.test.model.*;
 //dodac moze jeszcze cos takiego jak register czyli np
 //@Validator(register="pl.jlabs.beren.custom.Validators")
 //@I tam bedziemy mieli zestaw @Idkow albo metod do zeskanowania jako validatorow
-@Validator
+//@Validator
 public interface TestValidator {
 
     @Validate({
             @Field(name = "source", operation = "neitherOf(SarumanGifts, MordorGmbH)"),
-            @Field(name = "requestId", operation = "biggerThan(0)"),
+            @Field(name = "requestId", operation = "biggerThan(0)", message = "requestId should be bigger than 0!"),
             @Field(name = "orders", operation = "validateOrders")
     })
     ValidationResults validateRequest(OrdersCreateRequest request);
@@ -44,6 +43,7 @@ public interface TestValidator {
         return "cash".equals(paymentForm) && paid;
     }
 
+    //eee trudne to bedzie bo jeszcze nie wiem co z tym operationContext ma byc wiec narazie skip
     @Id("myCustomInlineValidation2")
     default boolean customInlineValidator2(Invoice invoice, OperationContext operationContext) {
         Invoice validationObject = operationContext.getValidationObject(Invoice.class);

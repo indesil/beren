@@ -1,7 +1,9 @@
 package pl.jlabs.beren.compilator.methods;
 
+import pl.jlabs.beren.annotations.BreakingStrategy;
 import pl.jlabs.beren.annotations.Id;
 import pl.jlabs.beren.annotations.Validate;
+import pl.jlabs.beren.annotations.Validator;
 import pl.jlabs.beren.model.ValidationResults;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -9,33 +11,40 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.ElementFilter;
 import java.util.List;
 
 import static java.lang.String.format;
+import static javax.lang.model.util.ElementFilter.constructorsIn;
+import static javax.lang.model.util.ElementFilter.methodsIn;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
 public class MethodsExtractor {
-    public static ClassMethods extractMethods(Element element, ProcessingEnvironment processingEnv) {
-        TypeElement typeElement = (TypeElement) element;
+
+    public static TypeMethods extractMethods(TypeElement typeElement, ProcessingEnvironment processingEnv) {
         List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(typeElement);
-        List<ExecutableElement> allClassDefinedMethods = ElementFilter.methodsIn(allMembers);
+        List<ExecutableElement> allClassDefinedMethods = methodsIn(allMembers);
         allClassDefinedMethods.removeAll(objectMethods(processingEnv));
 
-        ClassMethods classMethods = new ClassMethods();
+        TypeMethods typeMethods = new TypeMethods(constructorsIn(allMembers), getBreakingStrategy(typeElement));
+
         for(ExecutableElement methodElement : allClassDefinedMethods) {
-            classMethods.addMethodReference(getMethodReference(methodElement), methodElement);
+            typeMethods.addMethodReference(getMethodReference(methodElement), methodElement);
             if(isMethodToImplement(methodElement, processingEnv)) {
-                classMethods.addMethodToImplement(methodElement);
+                typeMethods.addMethodToImplement(methodElement);
             }
         }
 
-        return classMethods;
+        return typeMethods;
     }
 
     private static List<ExecutableElement> objectMethods(ProcessingEnvironment processingEnv) {
         TypeElement objectElement = processingEnv.getElementUtils().getTypeElement(Object.class.getName());
-        return ElementFilter.methodsIn(objectElement.getEnclosedElements());
+        return methodsIn(objectElement.getEnclosedElements());
+    }
+
+    private static BreakingStrategy getBreakingStrategy(TypeElement typeElement) {
+        Validator annotation = typeElement.getAnnotation(Validator.class);
+        return annotation.breakingStrategy();
     }
 
     private static String getMethodReference(ExecutableElement methodElement) {
@@ -56,8 +65,8 @@ public class MethodsExtractor {
             return false;
         }
 
-        if(methodElement.getParameters().size() < 1) {
-            processingEnv.getMessager().printMessage(ERROR, format("Validator method %s must have input parameter!",  methodElement.getSimpleName()));
+        if(methodElement.getParameters().size() != 1) {
+            processingEnv.getMessager().printMessage(ERROR, format("Validator method %s must have 1 (and only 1) input parameter!",  methodElement.getSimpleName()));
             return false;
         }
 
