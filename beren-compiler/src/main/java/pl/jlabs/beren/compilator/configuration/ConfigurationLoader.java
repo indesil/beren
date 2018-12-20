@@ -1,9 +1,14 @@
 package pl.jlabs.beren.compilator.configuration;
 
 import org.yaml.snakeyaml.Yaml;
+import pl.jlabs.beren.compilator.utils.OperationExtractorExtractor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.String.format;
 
 public class ConfigurationLoader {
     private static final String DEFAULT_CONFIG = "beren-default-configuration.yaml";
@@ -21,12 +26,43 @@ public class ConfigurationLoader {
         try (InputStream inputStream = ConfigurationLoader.class
                 .getClassLoader()
                 .getResourceAsStream(fileName)) {
-            return inputStream != null ? yaml.loadAs(inputStream, BerenConfig.class) : null;
+            if(inputStream != null) {
+                return setupArgs(yaml.loadAs(inputStream, BerenConfig.class));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private static BerenConfig setupArgs(BerenConfig berenConfig) {
+        for (Map.Entry<String, OperationConfig> entry : berenConfig.getOperationsMappings().entrySet()) {
+            entry.getValue().setArgs(listOfArgs(entry.getKey(), entry.getValue().getOperationCall()));
+        }
+        return berenConfig;
+    }
+
+    private static List<String> listOfArgs(String key, String operationCall) {
+        List<String> keyParams = OperationExtractorExtractor.getParams(key);
+        List<String> operationParams = OperationExtractorExtractor.getParams(operationCall);
+        validateParams(key, operationCall, keyParams, operationParams);
+        return operationParams;
+    }
+
+    private static void validateParams(String key, String operationCall, List<String> keyParams, List<String> operationParams) {
+        if(!operationParams.containsAll(keyParams)) {
+            throw new IllegalArgumentException(format("Invalid params mapping for key: %s and operation call: %s", key, operationCall));
+        }
+
+        if(!operationParams.contains("this")) {
+            throw new IllegalArgumentException(format("Operation call: %s is not referring to validated parameter(this)!", operationCall));
+        }
+
+        int expectedNumberOfParams = operationParams.size() - 1;
+        if(expectedNumberOfParams != keyParams.size()) {
+            throw new IllegalArgumentException(format("Missing parameters between key: %s and %s operation call!", key, operationCall));
+        }
     }
 
     private static BerenConfig mergeConfigs(BerenConfig defaultConfig, BerenConfig customConfig) {

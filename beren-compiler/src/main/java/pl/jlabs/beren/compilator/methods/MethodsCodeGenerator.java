@@ -1,24 +1,25 @@
 package pl.jlabs.beren.compilator.methods;
 
-import com.squareup.javapoet.*;
-import pl.jlabs.beren.annotations.BreakingStrategy;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import pl.jlabs.beren.compilator.configuration.BerenConfig;
+import pl.jlabs.beren.compilator.definitions.ValidationDefinition;
+import pl.jlabs.beren.compilator.methods.internal.InternalMethodGenerator;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
 public class MethodsCodeGenerator {
-
     private ProcessingEnvironment processingEnv;
     private BerenConfig berenConfig;
 
@@ -27,17 +28,18 @@ public class MethodsCodeGenerator {
         this.berenConfig = berenConfig;
     }
 
-    public List<MethodSpec> generateMethodsCode(TypeMethods typeMethods) {
+    public List<MethodSpec> generateMethodsCode(TypeMetadata typeMetadata) {
         List<MethodSpec> methods = new ArrayList<>();
 
-        for (ExecutableElement constructor : typeMethods.getConstructors()) {
+        for (ExecutableElement constructor : typeMetadata.getConstructors()) {
             if(!constructor.getModifiers().contains(Modifier.PRIVATE)) {
                 methods.add(createConstructor(constructor));
             }
         }
-
-        for (ExecutableElement methodToImplement : typeMethods.getMethodsToImplement()) {
-            methods.add(createMethod(methodToImplement, typeMethods));
+        InternalMethodGenerator internalMethodGenerator = new InternalMethodGenerator(processingEnv, berenConfig, typeMetadata.getBreakingStrategy());
+        for (ValidationDefinition validationDefinition : typeMetadata.getValidationDefinitions()) {
+            methods.add(createMethod(validationDefinition, internalMethodGenerator));
+            methods.add(internalMethodGenerator.createInternalValidationMethod(validationDefinition, typeMetadata));
         }
 
         return methods;
@@ -65,39 +67,9 @@ public class MethodsCodeGenerator {
         return CodeBlock.builder().add("super(" + paramsStatement + ")").build();
     }
 
-    private MethodSpec createMethod(ExecutableElement methodToImplement, TypeMethods typeMethods) {
-        return MethodSpec
-                .methodBuilder(methodToImplement.getSimpleName().toString())
-                .addParameters(getParameters(methodToImplement.getParameters()))
-                .addExceptions(getThrows(methodToImplement.getThrownTypes()))
-                .addCode(writeMethodBody(methodToImplement, typeMethods))
-                .addModifiers(getModifiers(methodToImplement.getModifiers()))
-                .returns(getReturnType(methodToImplement))
+    private MethodSpec createMethod(ValidationDefinition validationDefinition, InternalMethodGenerator internalMethodGenerator) {
+        return MethodSpec.overriding(validationDefinition.getMethodToImplement())
+                .addCode(internalMethodGenerator.createInternalMethodCall(validationDefinition))
                 .build();
-    }
-
-    private Modifier[] getModifiers(Set<Modifier> methodModifiers) {
-        if(methodModifiers.contains(Modifier.PUBLIC)) {
-            return new Modifier[]{Modifier.PUBLIC};
-        } else if(methodModifiers.contains(Modifier.PROTECTED)) {
-            return new Modifier[]{Modifier.PROTECTED};
-        }
-
-        return new Modifier[0];
-    }
-
-    private List<TypeName> getThrows(List<? extends TypeMirror> thrownTypes) {
-        return thrownTypes.stream().map(TypeName::get).collect(toList());
-    }
-
-    private CodeBlock writeMethodBody(ExecutableElement methodToImplement, TypeMethods typeMethods) {
-        if(typeMethods.getBreakingStrategy().equals(BreakingStrategy.THROW_ON_FIRST)) {
-            return CodeBlock.builder().build();
-        }
-        return CodeBlock.builder().addStatement("return null").build();
-    }
-
-    private TypeName getReturnType(ExecutableElement methodToImplement) {
-        return TypeName.get(methodToImplement.getReturnType());
     }
 }

@@ -4,7 +4,7 @@ import pl.jlabs.beren.annotations.BreakingStrategy;
 import pl.jlabs.beren.annotations.Id;
 import pl.jlabs.beren.annotations.Validate;
 import pl.jlabs.beren.annotations.Validator;
-import pl.jlabs.beren.compilator.methods.TypeMethods;
+import pl.jlabs.beren.compilator.methods.TypeMetadata;
 import pl.jlabs.beren.model.ValidationResults;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -22,26 +22,27 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static pl.jlabs.beren.annotations.BreakingStrategy.SUMMARIZE_ALL;
 import static pl.jlabs.beren.annotations.BreakingStrategy.THROW_ON_FIRST;
+import static pl.jlabs.beren.compilator.definitions.DefinitionBuilder.fromAnnotation;
 import static pl.jlabs.beren.compilator.utils.ErrorMessages.*;
 
 public class MethodsExtractor {
 
-    public static TypeMethods extractMethods(TypeElement typeElement, ProcessingEnvironment processingEnv) {
+    public static TypeMetadata extractMethods(TypeElement typeElement, ProcessingEnvironment processingEnv) {
         List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(typeElement);
         List<ExecutableElement> allClassDefinedMethods = methodsIn(allMembers);
         allClassDefinedMethods.removeAll(objectMethods(processingEnv));
 
         BreakingStrategy breakingStrategy = getBreakingStrategy(typeElement);
-        TypeMethods typeMethods = new TypeMethods(constructorsIn(allMembers), breakingStrategy);
+        TypeMetadata typeMetadata = new TypeMetadata(constructorsIn(allMembers), breakingStrategy);
 
         for(ExecutableElement methodElement : allClassDefinedMethods) {
-            typeMethods.addMethodReference(getMethodReference(methodElement), methodElement);
+            typeMetadata.addMethodReference(getMethodReference(methodElement), methodElement);
             if(isMethodToImplement(methodElement, breakingStrategy, processingEnv)) {
-                typeMethods.addMethodToImplement(methodElement);
+                typeMetadata.addValidationDefinition(fromAnnotation(methodElement));
             }
         }
 
-        return typeMethods;
+        return typeMetadata;
     }
 
     private static List<ExecutableElement> objectMethods(ProcessingEnvironment processingEnv) {

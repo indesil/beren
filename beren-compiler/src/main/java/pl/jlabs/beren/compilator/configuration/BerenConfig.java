@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BerenConfig {
-    Map<String, String> operationsMappings;
+    private Map<String, OperationConfig> operationsMappings;
 
-    public Map<String, String> getOperationsMappings() {
+    public Map<String, OperationConfig> getOperationsMappings() {
         if(operationsMappings == null) {
             operationsMappings = new HashMap<>();
         }
         return operationsMappings;
     }
 
-    public void setOperationsMappings(Map<String, String> operationsMappings) {
+    public void setOperationsMappings(Map<String, OperationConfig> operationsMappings) {
         this.operationsMappings = operationsMappings;
     }
 }

@@ -20,11 +20,20 @@ public interface TestValidator {
     })
     void validateRequest(OrdersCreateRequest request);
 
-    @Validate({
-            @Field(name = "invoiceMap", operation = "onEveryEntryValue(invoiceValidation)")
+    //@Field(name = "invoiceMap", operation = "forEachValue/forEachKey/forEachEntry(invoiceValidation, this)")
+    //to this ciekawy pomysł a te iteratory musza byc osobno zeby ich nikt nie zoverridował bo sie ich napsiać recznie nie da!
+    //moze najlepiej dac jakas dyrektywe typu #forEachValue zeby bylo widac ze to jest inna operacja
+    @Validate(nullable = true, value = {
+            @Field(name = "invoiceMap", operation = "#forEachValue(invoiceValidation)")
     })
-    void validateOrders(Orders orders);
+    default void validateOrders(Orders orders) {
+        for (Invoice value : orders.getInvoiceMap().values()) {
+            validateEntryValue(value);
+        }
+    }
 
+    //poki co robimy ze jak np Field String i File name =strinField załapie oba to oba sie beda generowac
+    //potem mozna dolozyc excludes albo override ale to w innej iteracji
     @Id("invoiceValidation")
     @Validate({
         @Field(type = String.class, operation = "notEmpty"),
@@ -32,7 +41,7 @@ public interface TestValidator {
             //jezeli to names bylo by np type to wtedy musimy przyjac array[] nie wiadomo czy w przypadku typow tez?
             // a moze i to i to?
         @Field(names = {"paymentForm", "paid"}, operation = "myCustomInlineValidation", message = "Cash was not paid! Please check variable ${path}"),
-        @Field(operation = "myCustomInlineValidation", message = "This validator failed because ${myPlaceHolder}"),
+        @Field(operation = "myCustomInlineValidation", message = "This validator failed because"),
         @Field(name = "customer", operation = "validateCustomer")
 
     })
@@ -51,9 +60,12 @@ public interface TestValidator {
         return invoice.getPaymentDate() != null && validationObject.isPaid();
     }
 
+    //@Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${arg1} must not occurs with ${field2}"),
+    //mega trudne bo jak zrobi cparsowanie enumow lepiej narazie names traktowac jak kolektywch tak jak type czy pattern
+    //nawet name mozna traktowac jako pojedynczy kolektyw
     @Validate({
-            @Field(names = {"firstName", "lastName", "title"}, operation = "allNotEmpty"),
-            @Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${param0} must not occurs with ${field1}"),
+            @Field(names = {"firstName", "lastName", "title"}, operation = "notEmpty"),
+            //@Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${arg1} must not occurs with ${field2}"),
             @Field(name = "address", operation = "addressIsValid", message = "Invalid address")
     })
     void validateCustomer(Customer customer);

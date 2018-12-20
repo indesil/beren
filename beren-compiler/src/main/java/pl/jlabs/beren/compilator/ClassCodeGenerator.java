@@ -6,7 +6,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import pl.jlabs.beren.compilator.configuration.BerenConfig;
 import pl.jlabs.beren.compilator.methods.MethodsCodeGenerator;
-import pl.jlabs.beren.compilator.methods.TypeMethods;
+import pl.jlabs.beren.compilator.methods.TypeMetadata;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -28,10 +28,10 @@ public class ClassCodeGenerator {
         this.methodsCodeGenerator = new MethodsCodeGenerator(processingEnv, berenConfig);
     }
 
-    public void generateJavaClass(Element typeElement, TypeMethods typeMethods) throws IOException {
+    public void generateJavaClass(Element typeElement, TypeMetadata typeMetadata) throws IOException {
         String validatorClass = typeElement.toString();
         PackageElement elementPackage = processingEnv.getElementUtils().getPackageOf(typeElement);
-        TypeSpec validatorJava = createJavaType(typeElement, methodsCodeGenerator.generateMethodsCode(typeMethods));
+        TypeSpec validatorJava = createJavaType(typeElement, methodsCodeGenerator.generateMethodsCode(typeMetadata));
         JavaFile javaFile = JavaFile.builder(elementPackage.toString(), validatorJava)
                 .build();
 

@@ -20,7 +20,7 @@ public abstract class TestValidatorAbstract {
     public TestValidatorAbstract(int dasd, float kkk, String aaa, Object o) {
     }
 
-    @Validate({
+    @Validate(nullable = true, value = {
             @Field(name = "source", operation = "neitherOf(SarumanGifts, MordorGmbH)"),
             @Field(name = "requestId", operation = "biggerThan(0)"),
             @Field(name = "orders", operation = "validateOrders")
@@ -28,7 +28,7 @@ public abstract class TestValidatorAbstract {
     abstract ValidationResults validateRequest(OrdersCreateRequest request);
 
     @Validate({
-            @Field(name = "invoiceMap", operation = "onEveryEntryValue(invoiceValidation)")
+            @Field(name = "invoiceMap", operation = "#ForEachValue(invoiceValidation)")
     })
     abstract ValidationResults validateOrders(Orders orders);
 
