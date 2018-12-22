@@ -2,8 +2,10 @@ package pl.jlabs.beren.compilator.utils;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 
 public class CodeUtils {
+    private static final String VOID_TYPE = "java.lang.Void";
     private static final String GET_PREFIX = "get";
     private static final String IS_PREFIX = "is";
 
@@ -32,5 +34,9 @@ public class CodeUtils {
         }
 
         return getterName.substring(2).toLowerCase();
+    }
+
+    public static boolean isNotVoidType(TypeMirror type) {
+        return !VOID_TYPE.equals(type.toString());
     }
 }

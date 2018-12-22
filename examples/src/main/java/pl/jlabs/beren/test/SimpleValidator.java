@@ -7,7 +7,7 @@ import pl.jlabs.beren.test.model.Address;
 import pl.jlabs.beren.test.model.Customer;
 import pl.jlabs.beren.test.model.Invoice;
 
-@Validator(breakingStrategy = BreakingStrategy.THROW_ON_FIRST)
+@Validator(breakingStrategy = BreakingStrategy.SUMMARIZE_ALL)
 public interface SimpleValidator {
 
     @Id("invoiceValidation")
@@ -22,7 +22,7 @@ public interface SimpleValidator {
             @Field(name = "customer", operation = "validateCustomer")
 
     })
-    void validateEntryValue(Invoice invoice);
+    ValidationResults validateEntryValue(Invoice invoice);
 
     @Id("myCustomInlineValidation")
     default boolean customInlineValidator(String paymentForm) {
@@ -39,7 +39,7 @@ public interface SimpleValidator {
             //@Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${arg1} must not occurs with ${field2}"),
             @Field(name = "address", operation = "addressIsValid", message = "Invalid address")
     })
-    void validateCustomer(Customer customer);
+    ValidationResults validateCustomer(Customer customer);
 
     default boolean addressIsValid(Address address) {
         return address.getAddressLine() != null && address.getCity() != null && address.getCountry() != null && address.getHouseNumber() > 0;

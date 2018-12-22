@@ -1,9 +1,13 @@
 package pl.jlabs.beren.compilator.utils;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import pl.jlabs.beren.annotations.BreakingStrategy;
 import pl.jlabs.beren.annotations.Id;
 import pl.jlabs.beren.annotations.Validate;
 import pl.jlabs.beren.annotations.Validator;
+import pl.jlabs.beren.compilator.definitions.FieldDefinition;
+import pl.jlabs.beren.compilator.definitions.ValidationDefinition;
 import pl.jlabs.beren.compilator.methods.TypeMetadata;
 import pl.jlabs.beren.model.ValidationResults;
 
@@ -15,14 +19,21 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static javax.lang.model.util.ElementFilter.constructorsIn;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static javax.tools.Diagnostic.Kind.ERROR;
+import static org.apache.commons.lang3.StringUtils.*;
 import static pl.jlabs.beren.annotations.BreakingStrategy.SUMMARIZE_ALL;
 import static pl.jlabs.beren.annotations.BreakingStrategy.THROW_ON_FIRST;
 import static pl.jlabs.beren.compilator.definitions.DefinitionBuilder.fromAnnotation;
+import static pl.jlabs.beren.compilator.utils.CodeUtils.isNotVoidType;
 import static pl.jlabs.beren.compilator.utils.ErrorMessages.*;
 
 public class MethodsExtractor {
@@ -37,7 +48,10 @@ public class MethodsExtractor {
         for(ExecutableElement methodElement : allClassDefinedMethods) {
             typeMetadata.addMethodReference(getMethodReference(methodElement), methodElement);
             if(isMethodToImplement(methodElement, breakingStrategy, processingEnv)) {
-                typeMetadata.addValidationDefinition(fromAnnotation(methodElement, processingEnv));
+                ValidationDefinition validationDefinition = fromAnnotation(methodElement, processingEnv);
+                if(isDefinitionValid(validationDefinition, processingEnv)) {
+                    typeMetadata.addValidationDefinition(validationDefinition);
+                }
             }
         }
 
@@ -95,5 +109,44 @@ public class MethodsExtractor {
             return false;
         }
         return true;
+    }
+
+    private static boolean isDefinitionValid(ValidationDefinition validationDefinition, ProcessingEnvironment processingEnv) {
+        for (FieldDefinition fieldDefinition : validationDefinition.getFieldDefinitions()) {
+            if(doesNotHaveOneSelector(fieldDefinition)) {
+                processingEnv.getMessager().printMessage(ERROR, format(INVALID_SELECTORS_NUMBER, fieldDefinition));
+                return false;
+            }
+
+            if(isNotEmpty(fieldDefinition.getPattern()) && isPattrnInvalid(fieldDefinition.getPattern(), processingEnv)) {
+                return false;
+            }
+
+
+        }
+        return true;
+    }
+
+    private static boolean doesNotHaveOneSelector(FieldDefinition fieldDefinition ) {
+        String type = isNotVoidType(fieldDefinition.getType()) ? fieldDefinition.getType().toString() : null;
+        String name = isNotEmpty(fieldDefinition.getName()) ? fieldDefinition.getName() : null;
+        String[] names = ArrayUtils.isNotEmpty(fieldDefinition.getNames())
+                && StringUtils.isNoneEmpty(fieldDefinition.getNames()) ? fieldDefinition.getNames() : null;
+        String pattern = isNotEmpty(fieldDefinition.getPattern()) ? fieldDefinition.getPattern() : null;
+        return Stream.of(name, names, pattern, type)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()).size() != 1;
+    }
+
+    private static boolean isPattrnInvalid(String pattern, ProcessingEnvironment processingEnv) {
+        try {
+            //2 ktrtna kompilacjka jest tutaj wtedy!
+            //raz tutaj raz przy tworzeniu ifa
+            Pattern.compile(pattern);
+            return false;
+        } catch (PatternSyntaxException e) {
+            processingEnv.getMessager().printMessage(ERROR, format(INVALID_PATTERN,  pattern, e.getMessage()));
+            return true;
+        }
     }
 }

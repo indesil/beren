@@ -5,4 +5,6 @@ public interface ErrorMessages {
     String PARAMS_NUMBER = "Validator method %s must have 1 (and only 1) input parameter!";
     String THROW_ON_FIRST_NOT_VOID = "For THROW_ON_FIRST strategy validator method %s must return void!";
     String SUMMARIZE_BAD_RETURN = "For SUMMARIZE_ALL strategy validator method %s must return ValidationResults!";
+    String INVALID_PATTERN = "Invalid pattern %s - %s";
+    String INVALID_SELECTORS_NUMBER = "Definition %s must have one and only one selector! Choose only one of [name, names, type, pattern]!";
 }

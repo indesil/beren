@@ -11,6 +11,7 @@ import pl.jlabs.beren.compilator.configuration.BerenConfig;
 import pl.jlabs.beren.compilator.configuration.OperationConfig;
 import pl.jlabs.beren.compilator.definitions.*;
 import pl.jlabs.beren.compilator.methods.TypeMetadata;
+import pl.jlabs.beren.compilator.utils.CodeUtils;
 import pl.jlabs.beren.compilator.utils.OperationExtractorExtractor;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -37,7 +37,6 @@ import static pl.jlabs.beren.compilator.utils.CodeUtils.normalizeGetterName;
 import static pl.jlabs.beren.compilator.utils.OperationExtractorExtractor.extractMethodName;
 
 public class InternalMethodGenerator {
-    public static final String VOID_TYPE = "java.lang.Void";
 
     private Pattern PARAM_NAME_PATTERN = Pattern.compile(PARAM_NAME);
     private ProcessingEnvironment processingEnv;
@@ -192,27 +191,21 @@ public class InternalMethodGenerator {
 
         if(isNotEmpty(fieldDefinition.getPattern())) {
             //tutaj juz jest lipa bo mamy splaszczone te names w mapie toLowerCase jak ktos tego nie wezmie pod uwage to lezy
-            try {
-                Pattern pattern = Pattern.compile(fieldDefinition.getPattern());
-                List<GetterDefinition> variablesOfType = validationParameter.getMapOfVariables().entrySet()
-                        .stream()
-                        .filter(entry -> pattern.matcher(entry.getKey()).matches())
-                        .map(Map.Entry::getValue)
-                        .collect(toList());
-                if (!variablesOfType.isEmpty()) {
-                    return variablesOfType;
-                }
-                String errorMessage = format("No variables from %s matched pattern %s", validationParameter, fieldDefinition.getPattern());
-                processingEnv.getMessager().printMessage(ERROR, errorMessage);
-                return Collections.emptyList();
-            } catch (PatternSyntaxException e) {
-                String errorMessage = format("Error while parsing pattern %s - %s", fieldDefinition.getPattern(), e.getMessage());
-                processingEnv.getMessager().printMessage(ERROR, errorMessage);
-                return Collections.emptyList();
+            Pattern pattern = Pattern.compile(fieldDefinition.getPattern());
+            List<GetterDefinition> variablesOfType = validationParameter.getMapOfVariables().entrySet()
+                    .stream()
+                    .filter(entry -> pattern.matcher(entry.getKey()).matches())
+                    .map(Map.Entry::getValue)
+                    .collect(toList());
+            if (!variablesOfType.isEmpty()) {
+                return variablesOfType;
             }
+            String errorMessage = format("No variables from %s matched pattern %s", validationParameter, fieldDefinition.getPattern());
+            processingEnv.getMessager().printMessage(ERROR, errorMessage);
+            return Collections.emptyList();
         }
 
-        if(!VOID_TYPE.equals(fieldDefinition.getType().toString())) {
+        if(CodeUtils.isNotVoidType(fieldDefinition.getType())) {
             List<GetterDefinition> variablesOfType = validationParameter.getMapOfVariables().entrySet()
                     .stream()
                     .filter(entry -> entry.getValue().getVariableType().equals(fieldDefinition.getType()))
