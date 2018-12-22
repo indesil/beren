@@ -10,7 +10,7 @@ import pl.jlabs.beren.test.model.*;
 //dodac moze jeszcze cos takiego jak register czyli np
 //@Validator(register="pl.jlabs.beren.custom.Validators")
 //@I tam bedziemy mieli zestaw @Idkow albo metod do zeskanowania jako validatorow
-@Validator
+//@Validator
 public interface TestValidator {
 
     @Validate({
@@ -40,16 +40,16 @@ public interface TestValidator {
         @Field(type = Double.class, operation = "greaterThan(0)"),
             //jezeli to names bylo by np type to wtedy musimy przyjac array[] nie wiadomo czy w przypadku typow tez?
             // a moze i to i to?
-        @Field(names = {"paymentForm", "paid"}, operation = "myCustomInlineValidation", message = "Cash was not paid! Please check variable ${path}"),
-        @Field(operation = "myCustomInlineValidation", message = "This validator failed because"),
+        //@Field(names = {"paymentForm", "paid"}, operation = "myCustomInlineValidation", message = "Cash was not paid! Please check variable ${path}"),
+        @Field(name = "paymentForm", operation = "myCustomInlineValidation", message = "myCustomInlineValidation!"),
         @Field(name = "customer", operation = "validateCustomer")
 
     })
     void validateEntryValue(Invoice invoice);
 
     @Id("myCustomInlineValidation")
-    default boolean customInlineValidator(String paymentForm, boolean paid) {
-        return "cash".equals(paymentForm) && paid;
+    default boolean customInlineValidator(String paymentForm) {
+        return "cash".equals(paymentForm);
     }
 
     //eee trudne to bedzie bo jeszcze nie wiem co z tym operationContext ma byc wiec narazie skip
@@ -64,7 +64,7 @@ public interface TestValidator {
     //mega trudne bo jak zrobi cparsowanie enumow lepiej narazie names traktowac jak kolektywch tak jak type czy pattern
     //nawet name mozna traktowac jako pojedynczy kolektyw
     @Validate({
-            @Field(names = {"firstName", "lastName", "title"}, operation = "notEmpty"),
+            //@Field(names = {"firstName", "lastName", "title"}, operation = "notEmpty"),
             //@Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${arg1} must not occurs with ${field2}"),
             @Field(name = "address", operation = "addressIsValid", message = "Invalid address")
     })

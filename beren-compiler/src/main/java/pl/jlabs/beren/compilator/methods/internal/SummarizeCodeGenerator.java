@@ -13,23 +13,43 @@ import static pl.jlabs.beren.compilator.utils.CodeUtils.VALIDATION_RESULTS_PARAM
 import static pl.jlabs.beren.compilator.utils.CodeUtils.createInternalMethodName;
 
 public class SummarizeCodeGenerator implements StrategyCodeGenerator {
+
+    @Override
+    public MethodSpec createValidationMethod(ValidationDefinition validationDefinition) {
+        String methodName = validationDefinition.getMethodName();
+        String paramName = validationDefinition.getValidationParameter().getParamName();
+        return MethodSpec.overriding(validationDefinition.getMethodToImplement())
+                .addStatement("$T $L = new $T()", ValidationResults.class, VALIDATION_RESULTS_PARAM, ValidationResults.class)
+                .addCode(createInternalMethodCall(methodName, paramName))
+                .addStatement("return $L", VALIDATION_RESULTS_PARAM)
+                .build();
+    }
+
     @Override
     public MethodSpec.Builder createInternalValidationMethod(ValidationDefinition validationDefinition) {
         return MethodSpec.methodBuilder(createInternalMethodName(validationDefinition.getMethodName()))
-                .addParameter(ParameterSpec.get(validationDefinition.getParameter()))
+                .addParameter(ParameterSpec.get(validationDefinition.getValidationParameter().getParam()))
                 .addParameter(ValidationResults.class, VALIDATION_RESULTS_PARAM)
                 .addModifiers(Modifier.PRIVATE)
                 .returns(TypeName.VOID);
     }
 
     @Override
-    public CodeBlock createInternalMethodCall(ValidationDefinition validationDefinition) {
-        String internalMethodName = createInternalMethodName(validationDefinition.getMethodName());
-        String validationMethodParamName = validationDefinition.getParameter().getSimpleName().toString();
+    public CodeBlock createNullableCodeBlock(ValidationDefinition validationDefinition, String violationMessage) {
+        String paramName = validationDefinition.getValidationParameter().getParamName();
         return CodeBlock.builder()
-                .addStatement("$T $L = new $T()", ValidationResults.class, VALIDATION_RESULTS_PARAM, ValidationResults.class)
-                .addStatement("$L($L, $L)", internalMethodName, validationMethodParamName, VALIDATION_RESULTS_PARAM)
-                .addStatement("return $L", VALIDATION_RESULTS_PARAM)
+                .beginControlFlow("if($L == null)", paramName)
+                .add(validationDefinition.isNullable() ? emptyBlock() : createInvalidValueBlock(violationMessage))
+                .addStatement("return")
+                .endControlFlow()
+                .build();
+    }
+
+    @Override
+    public CodeBlock createInternalMethodCall(String methodName, String paramName) {
+        String internalMethodName = createInternalMethodName(methodName);
+        return CodeBlock.builder()
+                .addStatement("$L($L, $L)", internalMethodName, paramName, VALIDATION_RESULTS_PARAM)
                 .build();
     }
 
@@ -37,7 +57,10 @@ public class SummarizeCodeGenerator implements StrategyCodeGenerator {
     public CodeBlock createInvalidValueBlock(String message) {
         return CodeBlock.builder()
                 .addStatement("$L.addViolation($S)", VALIDATION_RESULTS_PARAM, message)
-                .addStatement("return")
                 .build();
+    }
+
+    private CodeBlock emptyBlock() {
+        return CodeBlock.builder().build();
     }
 }

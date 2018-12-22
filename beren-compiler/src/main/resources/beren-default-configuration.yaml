@@ -1,16 +1,16 @@
 operationsMappings:
   neitherOf(a):
     operationCall: pl.jlabs.beren.operations.Operations.neitherOf(this, a)
-    defaultMessage: "${fieldName} must be neither of ${a}"
-  biggerThan(var):
-    operationCall: pl.jlabs.beren.operations.Operations.biggerThan(this, var)
-    defaultMessage: "${fieldName} must be bigger than ${var}"
+    defaultMessage: "%{paramName} must be neither of %{a}"
+  greaterThan(var):
+    operationCall: pl.jlabs.beren.operations.Operations.greaterThan(this, var)
+    defaultMessage: "%{paramName} must be bigger than %{var}"
   between(a,b):
     operationCall: pl.jlabs.beren.operations.Operations.between(this, a, b)
-    defaultMessage: "${fieldName} must be between ${a} and ${b}"
+    defaultMessage: "%{paramName} must be between %{a} and %{b}"
   notNull:
-    operationCall: java.util.Objects.notNull(this)
-    defaultMessage: "${fieldName} must not be null!"
+    operationCall: java.util.Objects.nonNull(this)
+    defaultMessage: "%{paramName} must not be null!"
   notEmpty:
-    operationCall: pl.jlabs.beren.operations.Operations.notEmpty(this)
-    defaultMessage: "${fieldName} must not be empty"
+    operationCall: org.apache.commons.lang3.StringUtils.isNotEmpty(this)
+    defaultMessage: "%{paramName} must not be empty"

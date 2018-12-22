@@ -38,7 +38,7 @@ public class MethodsCodeGenerator {
         }
         InternalMethodGenerator internalMethodGenerator = new InternalMethodGenerator(processingEnv, berenConfig, typeMetadata.getBreakingStrategy());
         for (ValidationDefinition validationDefinition : typeMetadata.getValidationDefinitions()) {
-            methods.add(createMethod(validationDefinition, internalMethodGenerator));
+            methods.add(internalMethodGenerator.createValidationMethod(validationDefinition));
             methods.add(internalMethodGenerator.createInternalValidationMethod(validationDefinition, typeMetadata));
         }
 
@@ -65,11 +65,5 @@ public class MethodsCodeGenerator {
     private CodeBlock createSuperConstructorCall(List<VariableElement> parameters) {
         String paramsStatement = parameters.stream().map(param -> param.getSimpleName().toString()).collect(Collectors.joining(","));
         return CodeBlock.builder().add("super(" + paramsStatement + ")").build();
-    }
-
-    private MethodSpec createMethod(ValidationDefinition validationDefinition, InternalMethodGenerator internalMethodGenerator) {
-        return MethodSpec.overriding(validationDefinition.getMethodToImplement())
-                .addCode(internalMethodGenerator.createInternalMethodCall(validationDefinition))
-                .build();
     }
 }

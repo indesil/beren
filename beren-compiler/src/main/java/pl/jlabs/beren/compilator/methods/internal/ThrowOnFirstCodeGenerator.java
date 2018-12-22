@@ -12,26 +12,48 @@ import javax.lang.model.element.Modifier;
 import static pl.jlabs.beren.compilator.utils.CodeUtils.createInternalMethodName;
 
 public class ThrowOnFirstCodeGenerator implements StrategyCodeGenerator {
+
+    @Override
+    public MethodSpec createValidationMethod(ValidationDefinition validationDefinition) {
+        String methodName = validationDefinition.getMethodName();
+        String paramName = validationDefinition.getValidationParameter().getParamName();
+        return MethodSpec.overriding(validationDefinition.getMethodToImplement())
+                .addCode(createInternalMethodCall(methodName, paramName))
+                .build();
+    }
+
     @Override
     public MethodSpec.Builder createInternalValidationMethod(ValidationDefinition validationDefinition) {
         return MethodSpec.methodBuilder(createInternalMethodName(validationDefinition.getMethodName()))
-                .addParameter(ParameterSpec.get(validationDefinition.getParameter()))
+                .addParameter(ParameterSpec.get(validationDefinition.getValidationParameter().getParam()))
                 .addModifiers(Modifier.PRIVATE)
                 .returns(TypeName.VOID);
     }
 
     @Override
-    public CodeBlock createInternalMethodCall(ValidationDefinition validationDefinition) {
-        String internalMethodName = createInternalMethodName(validationDefinition.getMethodName());
-        String validationMethodParamName = validationDefinition.getParameter().getSimpleName().toString();
+    public CodeBlock createNullableCodeBlock(ValidationDefinition validationDefinition, String violationMessage) {
+        String paramName = validationDefinition.getValidationParameter().getParamName();
         return CodeBlock.builder()
-                .addStatement("$L($L)", internalMethodName, validationMethodParamName)
-                .addStatement("return")
+                .beginControlFlow("if($L == null)", paramName)
+                .add(validationDefinition.isNullable() ? voidReturn() : createInvalidValueBlock(violationMessage))
+                .endControlFlow()
+                .build();
+    }
+
+    @Override
+    public CodeBlock createInternalMethodCall(String methodName, String paramName) {
+        String internalMethodName = createInternalMethodName(methodName);
+        return CodeBlock.builder()
+                .addStatement("$L($L)", internalMethodName, paramName)
                 .build();
     }
 
     @Override
     public CodeBlock createInvalidValueBlock(String message) {
         return CodeBlock.builder().addStatement("throw new $T($S)", ValidationException.class, message).build();
+    }
+
+    private CodeBlock voidReturn() {
+        return CodeBlock.builder().addStatement("return").build();
     }
 }

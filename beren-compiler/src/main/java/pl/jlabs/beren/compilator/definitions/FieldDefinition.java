@@ -1,6 +1,7 @@
 package pl.jlabs.beren.compilator.definitions;
 
 import javax.lang.model.type.TypeMirror;
+import java.util.Arrays;
 
 public class FieldDefinition {
     private String name;
@@ -62,5 +63,17 @@ public class FieldDefinition {
 
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public String toString() {
+        return "FieldDefinition{" +
+                "name='" + name + '\'' +
+                ", names=" + Arrays.toString(names) +
+                ", type=" + type +
+                ", pattern='" + pattern + '\'' +
+                ", operation='" + operation + '\'' +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

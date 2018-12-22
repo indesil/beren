@@ -2,22 +2,33 @@ package pl.jlabs.beren.compilator.definitions;
 
 import pl.jlabs.beren.annotations.Field;
 import pl.jlabs.beren.annotations.Validate;
+import pl.jlabs.beren.compilator.utils.CodeUtils;
+import pl.jlabs.beren.compilator.utils.MethodsExtractor;
 
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static pl.jlabs.beren.compilator.utils.CodeUtils.normalizeGetterName;
 
 public class DefinitionBuilder {
-    public static ValidationDefinition fromAnnotation(ExecutableElement methodElement) {
+
+    public static ValidationDefinition fromAnnotation(ExecutableElement methodElement, ProcessingEnvironment processingEnv) {
         Validate annotation = methodElement.getAnnotation(Validate.class);
         return new ValidationDefinition()
                 .withNullable(annotation.nullable())
                 .withNullableMessage(annotation.nullableMessage())
                 .withFieldDefinitions(createFieldsDefinitions(annotation.value()))
+                .withValidationParameter(createValidationParamDefinition(methodElement, processingEnv))
                 .withMethodToImplement(methodElement);
     }
 
@@ -43,5 +54,30 @@ public class DefinitionBuilder {
         }
 
         return null;
+    }
+
+    private static ValidationParamDefinition createValidationParamDefinition(ExecutableElement methodToImplement, ProcessingEnvironment processingEnv) {
+        VariableElement param = CodeUtils.getValidationMethodParam(methodToImplement);
+        return new ValidationParamDefinition()
+                .withParam(param)
+                .withMapOfGetters(createVariableMapMap(param, processingEnv))
+                .withParamName(param.getSimpleName().toString());
+    }
+
+    private static Map<String, GetterDefinition> createVariableMapMap(VariableElement param, ProcessingEnvironment processingEnv) {
+        TypeElement paramElement = (TypeElement) processingEnv.getTypeUtils().asElement(param.asType());
+        List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(paramElement);
+        return MethodsExtractor.extractMethods(allMembers, processingEnv)
+                .stream()
+                .filter(CodeUtils::isGetterMethod)
+                .collect(toMap(method -> normalizeGetterName(method.getSimpleName().toString()), DefinitionBuilder::toVariableDefinition));
+    }
+
+
+
+    private static GetterDefinition toVariableDefinition(ExecutableElement getterMethod) {
+        return new GetterDefinition()
+                .withVariableGetter(getterMethod.getSimpleName().toString())
+                .withVariableType(getterMethod.getReturnType());
     }
 }

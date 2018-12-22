@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static pl.jlabs.beren.compilator.utils.CodeUtils.THIS_PARAM;
 
 public class ConfigurationLoader {
     private static final String DEFAULT_CONFIG = "beren-default-configuration.yaml";
@@ -55,7 +56,7 @@ public class ConfigurationLoader {
             throw new IllegalArgumentException(format("Invalid params mapping for key: %s and operation call: %s", key, operationCall));
         }
 
-        if(!operationParams.contains("this")) {
+        if(!operationParams.contains(THIS_PARAM)) {
             throw new IllegalArgumentException(format("Operation call: %s is not referring to validated parameter(this)!", operationCall));
         }
 

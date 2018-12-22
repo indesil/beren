@@ -8,7 +8,7 @@ import pl.jlabs.beren.test.model.*;
 //dodac moze jeszcze cos takiego jak register czyli np
 //@Validator(register="pl.jlabs.beren.custom.Validators")
 //@I tam bedziemy mieli zestaw @Idkow albo metod do zeskanowania jako validatorow
-@Validator(breakingStrategy = BreakingStrategy.SUMMARIZE_ALL)
+//@Validator(breakingStrategy = BreakingStrategy.SUMMARIZE_ALL)
 public abstract class TestValidatorAbstract {
 
     public TestValidatorAbstract() {
@@ -38,7 +38,7 @@ public abstract class TestValidatorAbstract {
         @Field(type = Double.class, operation = "greaterThan(0)"),
             //jezeli to names bylo by np type to wtedy musimy przyjac array[] nie wiadomo czy w przypadku typow tez?
             // a moze i to i to?
-        @Field(names = {"paymentForm", "paid"}, operation = "myCustomInlineValidation", message = "Cash was not paid! Please check variable ${path}"),
+        //@Field(names = {"paymentForm", "paid"}, operation = "myCustomInlineValidation", message = "Cash was not paid! Please check variable ${path}"),
         @Field(operation = "myCustomInlineValidation", message = "This validator failed because ${myPlaceHolder}"),
         @Field(name = "customer", operation = "validateCustomer")
 
@@ -58,8 +58,8 @@ public abstract class TestValidatorAbstract {
     }
 
     @Validate({
-            @Field(names = {"firstName", "lastName", "title"}, operation = "allNotEmpty"),
-            @Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${param0} must not occurs with ${field1}"),
+            //@Field(names = {"firstName", "lastName", "title"}, operation = "allNotEmpty"),
+            //@Field(names = {"gender", "age"}, operation = "notEquals(UNKNOWN) && isNull", message = "${param0} must not occurs with ${field1}"),
             @Field(name = "address", operation = "addressIsValid", message = "Invalid address")
     })
     abstract ValidationResults validateCustomer(Customer customer);

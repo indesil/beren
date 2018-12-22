@@ -27,10 +27,9 @@ import static pl.jlabs.beren.compilator.utils.ErrorMessages.*;
 
 public class MethodsExtractor {
 
-    public static TypeMetadata extractMethods(TypeElement typeElement, ProcessingEnvironment processingEnv) {
+    public static TypeMetadata extractTypeMetadata(TypeElement typeElement, ProcessingEnvironment processingEnv) {
         List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(typeElement);
-        List<ExecutableElement> allClassDefinedMethods = methodsIn(allMembers);
-        allClassDefinedMethods.removeAll(objectMethods(processingEnv));
+        List<ExecutableElement> allClassDefinedMethods = extractMethods(allMembers, processingEnv);
 
         BreakingStrategy breakingStrategy = getBreakingStrategy(typeElement);
         TypeMetadata typeMetadata = new TypeMetadata(constructorsIn(allMembers), breakingStrategy);
@@ -38,11 +37,18 @@ public class MethodsExtractor {
         for(ExecutableElement methodElement : allClassDefinedMethods) {
             typeMetadata.addMethodReference(getMethodReference(methodElement), methodElement);
             if(isMethodToImplement(methodElement, breakingStrategy, processingEnv)) {
-                typeMetadata.addValidationDefinition(fromAnnotation(methodElement));
+                typeMetadata.addValidationDefinition(fromAnnotation(methodElement, processingEnv));
             }
         }
 
         return typeMetadata;
+    }
+
+    public static List<ExecutableElement> extractMethods(List<? extends Element> allTypeMembers, ProcessingEnvironment processingEnv) {
+        List<ExecutableElement> allClassDefinedMethods = methodsIn(allTypeMembers);
+        allClassDefinedMethods.removeAll(objectMethods(processingEnv));
+
+        return allClassDefinedMethods;
     }
 
     private static List<ExecutableElement> objectMethods(ProcessingEnvironment processingEnv) {

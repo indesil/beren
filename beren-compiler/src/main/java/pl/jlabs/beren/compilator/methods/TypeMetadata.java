@@ -4,10 +4,7 @@ import pl.jlabs.beren.annotations.BreakingStrategy;
 import pl.jlabs.beren.compilator.definitions.ValidationDefinition;
 
 import javax.lang.model.element.ExecutableElement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TypeMetadata {
     private Map<String, ExecutableElement> methodsReferences = new HashMap<>();
@@ -28,8 +25,11 @@ public class TypeMetadata {
         methodsReferences.put(methodName, methodElement);
     }
 
-    public ExecutableElement getMethod(String methodReference) {
-        return methodsReferences.get(methodReference);
+    public Optional<ExecutableElement> getMethod(String methodReference) {
+        return methodsReferences.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(methodReference))
+                .map(Map.Entry::getValue)
+                .findAny();
     }
 
     public BreakingStrategy getBreakingStrategy() {

@@ -1,9 +1,6 @@
 package pl.jlabs.beren.compilator;
 
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import pl.jlabs.beren.compilator.configuration.BerenConfig;
 import pl.jlabs.beren.compilator.methods.MethodsCodeGenerator;
 import pl.jlabs.beren.compilator.methods.TypeMetadata;
@@ -16,7 +13,10 @@ import javax.lang.model.element.PackageElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
+
+import static com.squareup.javapoet.ClassName.get;
 
 public class ClassCodeGenerator {
 
@@ -33,6 +33,7 @@ public class ClassCodeGenerator {
         PackageElement elementPackage = processingEnv.getElementUtils().getPackageOf(typeElement);
         TypeSpec validatorJava = createJavaType(typeElement, methodsCodeGenerator.generateMethodsCode(typeMetadata));
         JavaFile javaFile = JavaFile.builder(elementPackage.toString(), validatorJava)
+                .addStaticImport(Arrays.class, "asList")
                 .build();
 
         JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(validatorClass + "Impl", typeElement);

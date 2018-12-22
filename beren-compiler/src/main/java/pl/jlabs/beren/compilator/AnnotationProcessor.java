@@ -47,7 +47,7 @@ public class AnnotationProcessor extends AbstractProcessor {
         for (Element typeElement : validatorElements) {
             try {
                 if(isEitherInterfaceOrClass(typeElement.getKind())) {
-                    TypeMetadata typeMetadata = MethodsExtractor.extractMethods((TypeElement) typeElement, processingEnv);
+                    TypeMetadata typeMetadata = MethodsExtractor.extractTypeMetadata((TypeElement) typeElement, processingEnv);
                     processingEnv.getMessager().printMessage(MANDATORY_WARNING, format("generating validator for %s", typeElement.toString()));
                     classCodeGenerator.generateJavaClass(typeElement, typeMetadata);
                 } else {

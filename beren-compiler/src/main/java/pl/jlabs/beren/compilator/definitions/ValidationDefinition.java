@@ -1,18 +1,12 @@
 package pl.jlabs.beren.compilator.definitions;
 
-import pl.jlabs.beren.compilator.utils.CodeUtils;
-
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
 import java.util.List;
 
 public class ValidationDefinition {
     private ExecutableElement methodToImplement;
     private String methodName;
-    private VariableElement parameter;
-    //dodac parameter meta data zeby miec wszystkie gettery dla danego parametru
-    //processingEnv.getElementUtils().getAllMembers((TypeElement) processingEnv.getTypeUtils().asElement(validationDefinition.getParameter().asType()))
-    //ElementFilter.methodsIn().filterGetters()
+    private ValidationParamDefinition validationParameter;
     private boolean nullable;
     private String nullableMessage;
     private List<FieldDefinition> fieldDefinitions;
@@ -20,7 +14,11 @@ public class ValidationDefinition {
     public ValidationDefinition withMethodToImplement(ExecutableElement methodToImplement) {
         this.methodToImplement = methodToImplement;
         this.methodName = methodToImplement.getSimpleName().toString();
-        this.parameter = CodeUtils.getValidationMethodParam(methodToImplement);
+        return this;
+    }
+
+    public ValidationDefinition withValidationParameter(ValidationParamDefinition validationParameter) {
+        this.validationParameter = validationParameter;
         return this;
     }
 
@@ -55,8 +53,8 @@ public class ValidationDefinition {
         return nullableMessage;
     }
 
-    public VariableElement getParameter() {
-        return parameter;
+    public ValidationParamDefinition getValidationParameter() {
+        return validationParameter;
     }
 
     public List<FieldDefinition> getFieldDefinitions() {

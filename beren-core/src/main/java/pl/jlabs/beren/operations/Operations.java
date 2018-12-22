@@ -8,7 +8,7 @@ public class Operations {
         return !expectedStrings.contains(input);
     }
 
-    public static final boolean neitherOf(String input, String[] expectedStrings) {
+    public static final boolean neitherOf(String input, String... expectedStrings) {
         for (String expectedString : expectedStrings) {
             if(expectedString.equals(input)) {
                 return false;
@@ -17,12 +17,16 @@ public class Operations {
         return true;
     }
 
-    public static final boolean biggerThan(Number number, int a) {
-        return number != null && number.intValue() > a;
+    public static final boolean greaterThan(int number, int a) {
+        return number > a;
     }
 
-    public static final boolean biggerThan(Number number, double a) {
-        return number != null && number.doubleValue() > a;
+    public static final boolean greaterThan(Integer number, int a) {
+        return number != null && number > a;
+    }
+
+    public static final boolean greaterThan(Double number, double a) {
+        return number != null && number > a;
     }
 
     public static final boolean between(Number number, int a, int b) {
