@@ -8,6 +8,8 @@ import pl.jlabs.beren.test.model.Customer;
 import pl.jlabs.beren.test.model.Invoice;
 import pl.jlabs.beren.test.model.OrdersCreateRequest;
 
+import java.util.Objects;
+
 @Validator(breakingStrategy = BreakingStrategy.SUMMARIZE_ALL)
 public interface SimpleValidator {
 
@@ -52,4 +54,22 @@ public interface SimpleValidator {
     default boolean addressIsValid(Address address) {
         return address.getAddressLine() != null && address.getCity() != null && address.getCountry() != null && address.getHouseNumber() > 0;
     }
+
+    //rozwazyc taki case bo to jest trudne
+    //generalnie dla THROW_ON_FIRST nic sie nie zmienia
+    // ale dla summarize jest problem z przekazywaniem validation resutls
+    // przemyslec to razem z ValidationContext bo teraz to jest duzy problem jezeli ktos
+    // wywola ze swojej metody metode walidacyjna to napisze sobie ValidationResults i bedzie mial 0!
+   /*default void mojaWalidacja(Invoice invoice, ValidationResults validationResults) {
+        validateEntryValue(invoice);
+
+    }*/
+
+   //no chyba ze tak
+    //ciekawe te casy
+       /*default ValidationResults mojaWalidacja(Invoice invoice) {
+        ValidationResults validationResults = validateEntryValue(invoice);
+        // tutaj cosik sobie z tym zrobi
+        return validationResults;
+    }*/
 }

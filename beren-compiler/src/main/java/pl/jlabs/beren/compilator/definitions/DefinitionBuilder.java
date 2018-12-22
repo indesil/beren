@@ -3,7 +3,7 @@ package pl.jlabs.beren.compilator.definitions;
 import pl.jlabs.beren.annotations.Field;
 import pl.jlabs.beren.annotations.Validate;
 import pl.jlabs.beren.compilator.utils.CodeUtils;
-import pl.jlabs.beren.compilator.utils.MethodsExtractor;
+import pl.jlabs.beren.compilator.utils.MethodsUtil;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -67,7 +67,7 @@ public class DefinitionBuilder {
     private static Map<String, GetterDefinition> createVariableMapMap(VariableElement param, ProcessingEnvironment processingEnv) {
         TypeElement paramElement = (TypeElement) processingEnv.getTypeUtils().asElement(param.asType());
         List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(paramElement);
-        return MethodsExtractor.extractMethods(allMembers, processingEnv)
+        return MethodsUtil.extractMethods(allMembers, processingEnv)
                 .stream()
                 .filter(CodeUtils::isGetterMethod)
                 .collect(toMap(method -> normalizeGetterName(method.getSimpleName().toString()), DefinitionBuilder::toVariableDefinition));

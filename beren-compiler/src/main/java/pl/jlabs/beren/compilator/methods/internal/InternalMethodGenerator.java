@@ -81,10 +81,6 @@ public class InternalMethodGenerator {
         return PARAM_NAME_PATTERN.matcher(message).replaceAll(paramName);
     }
 
-    private CodeBlock voidReturnBlock() {
-        return CodeBlock.builder().addStatement("return").build();
-    }
-
     private CodeBlock createValidationBlocks(ValidationDefinition validationDefinition, TypeMetadata typeMetadata) {
         CodeBlock.Builder builder = CodeBlock.builder();
         for (FieldDefinition fieldDefinition : validationDefinition.getFieldDefinitions()) {

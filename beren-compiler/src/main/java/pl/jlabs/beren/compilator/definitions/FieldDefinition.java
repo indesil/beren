@@ -67,7 +67,7 @@ public class FieldDefinition {
 
     @Override
     public String toString() {
-        return "FieldDefinition{" +
+        return "FieldValidationDefinition{" +
                 "name='" + name + '\'' +
                 ", names=" + Arrays.toString(names) +
                 ", type=" + type +

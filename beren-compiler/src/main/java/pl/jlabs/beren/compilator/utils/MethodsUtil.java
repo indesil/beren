@@ -12,14 +12,13 @@ import pl.jlabs.beren.compilator.methods.TypeMetadata;
 import pl.jlabs.beren.model.ValidationResults;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -36,7 +35,12 @@ import static pl.jlabs.beren.compilator.definitions.DefinitionBuilder.fromAnnota
 import static pl.jlabs.beren.compilator.utils.CodeUtils.isNotVoidType;
 import static pl.jlabs.beren.compilator.utils.ErrorMessages.*;
 
-public class MethodsExtractor {
+public class MethodsUtil {
+
+    public static VariableElement getValidationMethodParam(ExecutableElement methodToImplement) {
+        //validation methods must have one param!
+        return methodToImplement.getParameters().get(0);
+    }
 
     public static TypeMetadata extractTypeMetadata(TypeElement typeElement, ProcessingEnvironment processingEnv) {
         List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(typeElement);
@@ -47,7 +51,7 @@ public class MethodsExtractor {
 
         for(ExecutableElement methodElement : allClassDefinedMethods) {
             typeMetadata.addMethodReference(getMethodReference(methodElement), methodElement);
-            if(isMethodToImplement(methodElement, breakingStrategy, processingEnv)) {
+            if(isValidMethodToImplement(methodElement, breakingStrategy, processingEnv)) {
                 ValidationDefinition validationDefinition = fromAnnotation(methodElement, processingEnv);
                 if(isDefinitionValid(validationDefinition, processingEnv)) {
                     typeMetadata.addValidationDefinition(validationDefinition);
@@ -70,9 +74,13 @@ public class MethodsExtractor {
         return methodsIn(objectElement.getEnclosedElements());
     }
 
-    private static BreakingStrategy getBreakingStrategy(TypeElement typeElement) {
+    public static BreakingStrategy getBreakingStrategy(TypeElement typeElement) {
         Validator annotation = typeElement.getAnnotation(Validator.class);
         return annotation.breakingStrategy();
+    }
+
+    public static Map<String, ExecutableElement> createMethodReferences(List<ExecutableElement> methods) {
+        return methods.stream().collect(Collectors.toMap(MethodsUtil::getMethodReference, Function.identity()));
     }
 
     private static String getMethodReference(ExecutableElement methodElement) {
@@ -83,7 +91,7 @@ public class MethodsExtractor {
         return methodElement.getSimpleName().toString();
     }
 
-    private static boolean isMethodToImplement(ExecutableElement methodElement, BreakingStrategy breakingStrategy, ProcessingEnvironment processingEnv) {
+    public static boolean isValidMethodToImplement(ExecutableElement methodElement, BreakingStrategy breakingStrategy, ProcessingEnvironment processingEnv) {
         if(methodElement.getAnnotation(Validate.class) == null) {
             return false;
         }

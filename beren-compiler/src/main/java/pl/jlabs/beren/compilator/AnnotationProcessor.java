@@ -1,7 +1,7 @@
 package pl.jlabs.beren.compilator;
 
 import pl.jlabs.beren.annotations.Validator;
-import pl.jlabs.beren.compilator.utils.MethodsExtractor;
+import pl.jlabs.beren.compilator.utils.MethodsUtil;
 import pl.jlabs.beren.compilator.methods.TypeMetadata;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -47,7 +47,7 @@ public class AnnotationProcessor extends AbstractProcessor {
         for (Element typeElement : validatorElements) {
             try {
                 if(isEitherInterfaceOrClass(typeElement.getKind())) {
-                    TypeMetadata typeMetadata = MethodsExtractor.extractTypeMetadata((TypeElement) typeElement, processingEnv);
+                    TypeMetadata typeMetadata = MethodsUtil.extractTypeMetadata((TypeElement) typeElement, processingEnv);
                     processingEnv.getMessager().printMessage(MANDATORY_WARNING, format("generating validator for %s", typeElement.toString()));
                     classCodeGenerator.generateJavaClass(typeElement, typeMetadata);
                 } else {
