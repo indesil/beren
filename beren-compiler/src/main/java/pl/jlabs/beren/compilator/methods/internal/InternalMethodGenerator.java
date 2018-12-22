@@ -15,8 +15,12 @@ import pl.jlabs.beren.compilator.utils.OperationExtractorExtractor;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -188,18 +192,24 @@ public class InternalMethodGenerator {
 
         if(isNotEmpty(fieldDefinition.getPattern())) {
             //tutaj juz jest lipa bo mamy splaszczone te names w mapie toLowerCase jak ktos tego nie wezmie pod uwage to lezy
-            Pattern pattern = Pattern.compile(fieldDefinition.getPattern());
-            List<GetterDefinition> variablesOfType = validationParameter.getMapOfVariables().entrySet()
-                    .stream()
-                    .filter(entry -> pattern.matcher(entry.getKey()).matches())
-                    .map(Map.Entry::getValue)
-                    .collect(toList());
-            if(!variablesOfType.isEmpty()) {
-                return variablesOfType;
+            try {
+                Pattern pattern = Pattern.compile(fieldDefinition.getPattern());
+                List<GetterDefinition> variablesOfType = validationParameter.getMapOfVariables().entrySet()
+                        .stream()
+                        .filter(entry -> pattern.matcher(entry.getKey()).matches())
+                        .map(Map.Entry::getValue)
+                        .collect(toList());
+                if (!variablesOfType.isEmpty()) {
+                    return variablesOfType;
+                }
+                String errorMessage = format("No variables from %s matched pattern %s", validationParameter, fieldDefinition.getPattern());
+                processingEnv.getMessager().printMessage(ERROR, errorMessage);
+                return Collections.emptyList();
+            } catch (PatternSyntaxException e) {
+                String errorMessage = format("Error while parsing pattern %s - %s", fieldDefinition.getPattern(), e.getMessage());
+                processingEnv.getMessager().printMessage(ERROR, errorMessage);
+                return Collections.emptyList();
             }
-            String errorMessage = format("No variables from %s matched pattern %s", validationParameter, fieldDefinition.getPattern());
-            processingEnv.getMessager().printMessage(ERROR, errorMessage);
-            return Collections.emptyList();
         }
 
         if(!VOID_TYPE.equals(fieldDefinition.getType().toString())) {
