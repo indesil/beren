@@ -29,10 +29,11 @@ public class OperationExtractorExtractor {
     }
 
     private static String createListArgs(String value, Scanner scanner) {
-        StringBuilder sb = new StringBuilder("Arrays.asList" + value);
+        //to moze doprowadzic do bledy jezeli ktos uzyje swojego asList ale raczej maly priorytet
+        StringBuilder sb = new StringBuilder("asList" + value);
         while(scanner.hasNext() && !value.endsWith("]")) {
             value = scanner.next();
-            sb.append(value);
+            sb.append("," + value);
         }
         return sb.toString().replace("[","(").replace("]", ")");
     }
