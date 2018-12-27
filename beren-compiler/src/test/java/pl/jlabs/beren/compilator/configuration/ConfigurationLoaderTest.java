@@ -11,9 +11,6 @@ class ConfigurationLoaderTest {
     @Test
     void test() {
         BerenConfig berenConfig = ConfigurationLoader.loadConfigurations();
-        List<String> strings1 = OperationUtils.parseParams("neitherOf(1, 'SarumanGifts', 'MordorGmbH')");
-        List<String> strings2 = OperationUtils.parseParams("neitherOf(1, 2, 'SarumanGifts', 'MordorGmbH')");
-        List<String> strings3 = OperationUtils.parseParams("neitherOf(1, 2, ['SarumanGifts', 'MordorGmbH'])");
     }
 
     //neitherOf(String, String)

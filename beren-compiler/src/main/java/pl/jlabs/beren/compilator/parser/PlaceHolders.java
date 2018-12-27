@@ -1,4 +1,4 @@
-package pl.jlabs.beren.compilator.definitions;
+package pl.jlabs.beren.compilator.parser;
 
 public class PlaceHolders {
 

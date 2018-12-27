@@ -3,10 +3,7 @@ package pl.jlabs.beren.test;
 
 import pl.jlabs.beren.annotations.*;
 import pl.jlabs.beren.model.ValidationResults;
-import pl.jlabs.beren.test.model.Address;
-import pl.jlabs.beren.test.model.Customer;
-import pl.jlabs.beren.test.model.Invoice;
-import pl.jlabs.beren.test.model.OrdersCreateRequest;
+import pl.jlabs.beren.test.model.*;
 
 @Validator(breakingStrategy = BreakingStrategy.SUMMARIZE_ALL)
 public interface SimpleValidator {
@@ -17,6 +14,11 @@ public interface SimpleValidator {
             //@Field(name = "orders", operation = "validateOrders")
     })
     ValidationResults validateRequest(OrdersCreateRequest request);
+
+    /*@Validate({
+            @Field(name = "invoiceMap", operation = "#forEachValue(invoiceValidation)")
+    })
+    ValidationResults validateOrders(Orders orders);*/
 
     @Id("invoiceValidation")
     @Validate({

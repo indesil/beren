@@ -8,15 +8,6 @@ public class Operations {
         return !expectedStrings.contains(input);
     }
 
-    public static final boolean neitherOf(String input, String... expectedStrings) {
-        for (String expectedString : expectedStrings) {
-            if(expectedString.equals(input)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static final boolean greaterThan(int number, int a) {
         return number > a;
     }

@@ -4,8 +4,6 @@ import pl.jlabs.beren.annotations.Validator;
 import pl.jlabs.beren.compilator.configuration.BerenConfig;
 import pl.jlabs.beren.compilator.parser.DefinitionParser;
 import pl.jlabs.beren.compilator.parser.ValidatorDefinition;
-import pl.jlabs.beren.compilator.utils.MethodsUtil;
-import pl.jlabs.beren.compilator.methods.TypeMetadata;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -24,7 +22,6 @@ import static pl.jlabs.beren.compilator.configuration.ConfigurationLoader.loadCo
 
 @SupportedAnnotationTypes({"pl.jlabs.beren.annotations.Validator"})
 public class AnnotationProcessor extends AbstractProcessor {
-    private ClassCodeGenerator classCodeGenerator;
     private DefinitionParser definitionParser;
 
     @Override
@@ -32,7 +29,6 @@ public class AnnotationProcessor extends AbstractProcessor {
         super.init(processingEnv);
         BerenConfig berenConfig = loadConfigurations();
         definitionParser = new DefinitionParser(processingEnv, berenConfig);
-        classCodeGenerator = new ClassCodeGenerator(processingEnv, berenConfig);
         processingEnv.getMessager().printMessage(MANDATORY_WARNING, "Annotation processor init");
     }
 
@@ -53,15 +49,14 @@ public class AnnotationProcessor extends AbstractProcessor {
         for (Element typeElement : validatorElements) {
             try {
                 if(isEitherInterfaceOrClass(typeElement.getKind())) {
-                    TypeMetadata typeMetadata = MethodsUtil.extractTypeMetadata((TypeElement) typeElement, processingEnv);
-                    ValidatorDefinition parse = definitionParser.parse((TypeElement) typeElement);
                     processingEnv.getMessager().printMessage(MANDATORY_WARNING, format("generating validator for %s", typeElement.toString()));
-                    classCodeGenerator.generateJavaClass(typeElement, typeMetadata);
+                    ValidatorDefinition validatorDefinition = definitionParser.parse((TypeElement) typeElement);
+                    ClassCodeGenerator.generateJavaClass(typeElement, validatorDefinition, processingEnv);
                 } else {
                     processingEnv.getMessager().printMessage(ERROR, format("Type %s is not class nor interface!",  typeElement.toString()));
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                processingEnv.getMessager().printMessage(ERROR, format("Error while generating validator class ",  e.getMessage()));
             }
         }
     }

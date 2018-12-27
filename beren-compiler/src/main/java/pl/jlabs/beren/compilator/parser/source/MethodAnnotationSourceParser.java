@@ -5,7 +5,7 @@ import pl.jlabs.beren.annotations.Field;
 import pl.jlabs.beren.annotations.Validate;
 import pl.jlabs.beren.compilator.configuration.BerenConfig;
 import pl.jlabs.beren.compilator.configuration.OperationConfig;
-import pl.jlabs.beren.compilator.definitions.PlaceHolders;
+import pl.jlabs.beren.compilator.parser.PlaceHolders;
 import pl.jlabs.beren.compilator.parser.FieldValidationDefinition;
 import pl.jlabs.beren.compilator.parser.RawFieldDefinition;
 import pl.jlabs.beren.compilator.parser.ValidationDefinition;
@@ -24,7 +24,7 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static pl.jlabs.beren.compilator.definitions.PlaceHolders.THIS_;
+import static pl.jlabs.beren.compilator.parser.PlaceHolders.THIS_;
 import static pl.jlabs.beren.compilator.parser.FieldValidationDefinition.OperationType.*;
 import static pl.jlabs.beren.compilator.utils.CodeUtils.extractFieldName;
 import static pl.jlabs.beren.compilator.utils.CodeUtils.isNotVoidType;
@@ -45,9 +45,10 @@ public class MethodAnnotationSourceParser implements SourceParser {
         Validate validateAnnotation = parserContext.getMethodToImplement().getAnnotation(Validate.class);
         return new ValidationDefinition()
                 .withNullable(validateAnnotation.nullable())
+                .withMethodToImplement(parserContext.getMethodToImplement())
                 .withNullableMessageTemplate(validateAnnotation.nullableMessage())
                 .withFieldsToValidate(createFieldsDefinitions(validateAnnotation.value(), parserContext))
-                .withValidatedParamName(parserContext.getValidationMethodParam().getSimpleName().toString());
+                .withValidatedParam(parserContext.getValidationMethodParam());
     }
 
     private List<FieldValidationDefinition> createFieldsDefinitions(Field[] fields, ParserContext parserContext) {
@@ -123,7 +124,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
         String operationRef = OperationUtils.strapFromParams(rawFieldDefinition.getOperation());
         ExecutableElement executableElement = parserContext.getMethodReferences().get(operationRef);
 
-        Map<String, String> params = mapWithThisParam(fieldGetter, parserContext.getValidationMethodParamName());
+        Map<String, String> params = paramsMap(fieldGetter, parserContext.getValidationMethodParamName());
         if(executableElement != null) {
             return fromClassMethodRef(executableElement, rawFieldDefinition, params);
         }
@@ -151,6 +152,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
                 .withMethodName(executableElement.getSimpleName().toString())
                 .withOperationType(operationType)
                 .withOperationClass(null)
+                .withParamsOrder(singletonList(THIS_))
                 .withParams(params);
     }
 
@@ -163,6 +165,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
                     .withMethodName(OperationUtils.extractMethodName(operationCall))
                     .withParams(createOperationParams(rawFieldDefinition, params, operationConfig))
                     .withOperationClass(OperationUtils.extractClassName(operationCall))
+                    .withParamsOrder(operationConfig.getArgs())
                     .withOperationType(STATIC_METHOD);
         }
 
@@ -214,7 +217,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
         return new HashMap<>();
     }
 
-    private Map<String, String> mapWithThisParam(String fieldGetter, String validationParamName) {
+    private Map<String, String> paramsMap(String fieldGetter, String validationParamName) {
         Map<String, String> params = new HashMap<>();
         String getterCall = validationParamName + "." + fieldGetter + "()";
         params.put(THIS_, getterCall);

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static pl.jlabs.beren.compilator.definitions.PlaceHolders.THIS_;
+import static pl.jlabs.beren.compilator.parser.PlaceHolders.THIS_;
 import static pl.jlabs.beren.compilator.utils.OperationUtils.strapFromParams;
 
 public class ConfigurationLoader {

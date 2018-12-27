@@ -7,8 +7,6 @@ public class OperationConfig {
     //must have!
     private String defaultMessage;
     private List<String> args;
-    //pointless always static method for operation config
-    private OperationType operationType = OperationType.STATIC_METHOD;
 
     public String getOperationCall() {
         return operationCall;
@@ -47,18 +45,5 @@ public class OperationConfig {
     public OperationConfig withArgs(List<String> args) {
         this.args = args;
         return this;
-    }
-
-    public OperationConfig withOperationType(OperationType operationType) {
-        this.operationType = operationType;
-        return this;
-    }
-
-    public OperationType getOperationType() {
-        return operationType;
-    }
-
-    public enum OperationType {
-        INTERNAL_VALIDATOR_METHOD, CLASS_METHOD, STATIC_METHOD;
     }
 }

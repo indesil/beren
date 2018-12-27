@@ -2,6 +2,7 @@ package pl.jlabs.beren.compilator.parser;
 
 import com.squareup.javapoet.ClassName;
 
+import java.util.List;
 import java.util.Map;
 
 //neitherOf(a):
@@ -36,6 +37,7 @@ public class FieldValidationDefinition {
     private String methodName;
     private ClassName operationClass;
     private Map<String, String> params;
+    private List<String> paramsOrder;
     private OperationType operationType = OperationType.STATIC_METHOD;
 
     public ClassName getOperationClass() {
@@ -53,6 +55,15 @@ public class FieldValidationDefinition {
 
     public FieldValidationDefinition withMethodName(String methodName) {
         this.methodName = methodName;
+        return this;
+    }
+
+    public List<String> getParamsOrder() {
+        return paramsOrder;
+    }
+
+    public FieldValidationDefinition withParamsOrder(List<String> paramsOrder) {
+        this.paramsOrder = paramsOrder;
         return this;
     }
 

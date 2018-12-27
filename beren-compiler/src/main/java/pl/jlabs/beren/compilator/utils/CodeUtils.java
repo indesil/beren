@@ -1,8 +1,8 @@
 package pl.jlabs.beren.compilator.utils;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import java.util.regex.Pattern;
 
 public class CodeUtils {
     private static final String VOID_TYPE = "java.lang.Void";
@@ -10,16 +10,26 @@ public class CodeUtils {
     private static final String IS_PREFIX = "is";
 
     private static final String INTERNAL_METHOD_PREFIX = "internal_";
-
+    private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
     public static final String VALIDATION_RESULTS_PARAM = "validationResults";
 
-    public static final String createInternalMethodName(String methodName) {
-        return INTERNAL_METHOD_PREFIX + methodName;
+    public static final String createTemplatePlaceHolder(String key) {
+        return "%\\{" + key + "\\}";
     }
 
-    public static VariableElement getValidationMethodParam(ExecutableElement methodToImplement) {
-        //validation methods must have one param!
-        return methodToImplement.getParameters().get(0);
+    public static final String createPlaceHolderParams(String value) {
+        return QUOTE_PATTERN.matcher(value).replaceAll("'");
+    }
+
+    public static final String createMethodArgument(String value) {
+        if(value.startsWith("(")) {
+            return "asList" + value;
+        }
+
+        return value;
+    }
+    public static final String createInternalMethodName(String methodName) {
+        return INTERNAL_METHOD_PREFIX + methodName;
     }
 
     public static String extractFieldName(String getterMethod) {

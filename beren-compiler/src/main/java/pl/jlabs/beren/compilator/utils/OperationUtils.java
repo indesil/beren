@@ -1,7 +1,6 @@
 package pl.jlabs.beren.compilator.utils;
 
 import com.squareup.javapoet.ClassName;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,6 @@ public class OperationUtils {
     }
 
     private static String createListArgs(String value, Scanner scanner) {
-        //to moze doprowadzic do bledy jezeli ktos uzyje swojego asList ale raczej maly priorytet
         StringBuilder sb = new StringBuilder(value);
         while(scanner.hasNext() && !value.endsWith("]")) {
             value = scanner.next();
@@ -75,15 +73,6 @@ public class OperationUtils {
             throw new IllegalArgumentException("Invalid param entry " + entry);
         }
         return entry.substring(openingBracket + 1, closingBracket);
-    }
-
-    public static String extractOperationRef(String entry) {
-        int openingBracket = entry.indexOf("(");
-        if(openingBracket == -1) {
-            return entry;
-        }
-
-        return entry.substring(0, openingBracket);
     }
 
     public static String extractMethodName(String entry) {
