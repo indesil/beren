@@ -1,5 +1,8 @@
 package pl.jlabs.beren.compilator.utils;
 
+import com.squareup.javapoet.ClassName;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,8 +12,25 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.split;
 
-public class OperationExtractorExtractor {
+public class OperationUtils {
     private static final Pattern APOSTROPHE_PATTERN = Pattern.compile("'");
+
+    public static ClassName extractClassName(String operationCall) {
+        int lastDot = operationCall.lastIndexOf('.');
+        String classWithPackage = operationCall.substring(0, lastDot);
+        lastDot = classWithPackage.lastIndexOf('.');
+        return ClassName.get(classWithPackage.substring(0, lastDot), classWithPackage.substring(lastDot + 1));
+    }
+
+    public static String strapFromParams(String operation) {
+        int openingBracket = operation.indexOf("(");
+        if(openingBracket > -1) {
+            return operation.substring(0, openingBracket);
+        }
+
+        return operation;
+    }
+
     public static List<String> parseParams(String entry) {
         String escapedEntry = APOSTROPHE_PATTERN.matcher(extractParams(entry)).replaceAll("\"");
         Scanner scanner = new Scanner(escapedEntry);
@@ -30,7 +50,7 @@ public class OperationExtractorExtractor {
 
     private static String createListArgs(String value, Scanner scanner) {
         //to moze doprowadzic do bledy jezeli ktos uzyje swojego asList ale raczej maly priorytet
-        StringBuilder sb = new StringBuilder("asList" + value);
+        StringBuilder sb = new StringBuilder(value);
         while(scanner.hasNext() && !value.endsWith("]")) {
             value = scanner.next();
             sb.append("," + value);

@@ -1,6 +1,9 @@
 package pl.jlabs.beren.compilator;
 
 import pl.jlabs.beren.annotations.Validator;
+import pl.jlabs.beren.compilator.configuration.BerenConfig;
+import pl.jlabs.beren.compilator.parser.DefinitionParser;
+import pl.jlabs.beren.compilator.parser.ValidatorDefinition;
 import pl.jlabs.beren.compilator.utils.MethodsUtil;
 import pl.jlabs.beren.compilator.methods.TypeMetadata;
 
@@ -22,11 +25,14 @@ import static pl.jlabs.beren.compilator.configuration.ConfigurationLoader.loadCo
 @SupportedAnnotationTypes({"pl.jlabs.beren.annotations.Validator"})
 public class AnnotationProcessor extends AbstractProcessor {
     private ClassCodeGenerator classCodeGenerator;
+    private DefinitionParser definitionParser;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        classCodeGenerator = new ClassCodeGenerator(processingEnv, loadConfigurations());
+        BerenConfig berenConfig = loadConfigurations();
+        definitionParser = new DefinitionParser(processingEnv, berenConfig);
+        classCodeGenerator = new ClassCodeGenerator(processingEnv, berenConfig);
         processingEnv.getMessager().printMessage(MANDATORY_WARNING, "Annotation processor init");
     }
 
@@ -48,6 +54,7 @@ public class AnnotationProcessor extends AbstractProcessor {
             try {
                 if(isEitherInterfaceOrClass(typeElement.getKind())) {
                     TypeMetadata typeMetadata = MethodsUtil.extractTypeMetadata((TypeElement) typeElement, processingEnv);
+                    ValidatorDefinition parse = definitionParser.parse((TypeElement) typeElement);
                     processingEnv.getMessager().printMessage(MANDATORY_WARNING, format("generating validator for %s", typeElement.toString()));
                     classCodeGenerator.generateJavaClass(typeElement, typeMetadata);
                 } else {

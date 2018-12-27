@@ -3,7 +3,7 @@ package pl.jlabs.beren.compilator.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BerenConfig {
+public class RawConfiguration {
     private Map<String, OperationConfig> operationsMappings;
 
     public Map<String, OperationConfig> getOperationsMappings() {
@@ -13,8 +13,7 @@ public class BerenConfig {
         return operationsMappings;
     }
 
-    public BerenConfig withOperationsMappings(Map<String, OperationConfig> operationsMappings) {
+    public void setOperationsMappings(Map<String, OperationConfig> operationsMappings) {
         this.operationsMappings = operationsMappings;
-        return this;
     }
 }

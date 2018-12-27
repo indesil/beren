@@ -73,8 +73,6 @@ public class DefinitionBuilder {
                 .collect(toMap(method -> normalizeGetterName(method.getSimpleName().toString()), DefinitionBuilder::toVariableDefinition));
     }
 
-
-
     private static GetterDefinition toVariableDefinition(ExecutableElement getterMethod) {
         return new GetterDefinition()
                 .withVariableGetter(getterMethod.getSimpleName().toString())

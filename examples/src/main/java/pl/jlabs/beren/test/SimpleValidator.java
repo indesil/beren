@@ -8,13 +8,11 @@ import pl.jlabs.beren.test.model.Customer;
 import pl.jlabs.beren.test.model.Invoice;
 import pl.jlabs.beren.test.model.OrdersCreateRequest;
 
-import java.util.Objects;
-
 @Validator(breakingStrategy = BreakingStrategy.SUMMARIZE_ALL)
 public interface SimpleValidator {
 
     @Validate({
-            @Field(name = "source", operation = "neitherOf(['SarumanGifts', 'MordorGmbH'])"),
+            @Field(name = "source", operation = "neitherOf(['Saruman,Gifts', 'MordorGmbH'])"),
             @Field(name = "requestId", operation = "greaterThan(0)", message = "requestId should be bigger than 0!"),
             //@Field(name = "orders", operation = "validateOrders")
     })

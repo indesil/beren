@@ -1,5 +1,6 @@
 package pl.jlabs.beren.compilator.utils;
 
+import com.sun.org.apache.bcel.internal.classfile.Code;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import pl.jlabs.beren.annotations.BreakingStrategy;
@@ -25,10 +26,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static javax.lang.model.util.ElementFilter.constructorsIn;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static javax.tools.Diagnostic.Kind.ERROR;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static pl.jlabs.beren.annotations.BreakingStrategy.SUMMARIZE_ALL;
 import static pl.jlabs.beren.annotations.BreakingStrategy.THROW_ON_FIRST;
 import static pl.jlabs.beren.compilator.definitions.DefinitionBuilder.fromAnnotation;
@@ -36,6 +38,15 @@ import static pl.jlabs.beren.compilator.utils.CodeUtils.isNotVoidType;
 import static pl.jlabs.beren.compilator.utils.ErrorMessages.*;
 
 public class MethodsUtil {
+
+    public static List<ExecutableElement> extractValidationParamFieldsGetters(VariableElement validationParam, ProcessingEnvironment processingEnv) {
+        TypeElement paramElement = (TypeElement) processingEnv.getTypeUtils().asElement(validationParam.asType());
+        List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(paramElement);
+        return MethodsUtil.extractMethods(allMembers, processingEnv)
+                .stream()
+                .filter(CodeUtils::isGetterMethod)
+                .collect(toList());
+    }
 
     public static VariableElement getValidationMethodParam(ExecutableElement methodToImplement) {
         //validation methods must have one param!
@@ -143,13 +154,11 @@ public class MethodsUtil {
         String pattern = isNotEmpty(fieldDefinition.getPattern()) ? fieldDefinition.getPattern() : null;
         return Stream.of(name, names, pattern, type)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList()).size() != 1;
+                .collect(toList()).size() != 1;
     }
 
     private static boolean isPattrnInvalid(String pattern, ProcessingEnvironment processingEnv) {
         try {
-            //2 ktrtna kompilacjka jest tutaj wtedy!
-            //raz tutaj raz przy tworzeniu ifa
             Pattern.compile(pattern);
             return false;
         } catch (PatternSyntaxException e) {

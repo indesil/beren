@@ -2,14 +2,18 @@ package pl.jlabs.beren.compilator.configuration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import pl.jlabs.beren.compilator.utils.OperationUtils;
+
+import java.util.List;
 
 class ConfigurationLoaderTest {
 
     @Test
     void test() {
-        String[] split = StringUtils.split("", ",");
-        String[] split2 = StringUtils.split("asda", ",");
         BerenConfig berenConfig = ConfigurationLoader.loadConfigurations();
+        List<String> strings1 = OperationUtils.parseParams("neitherOf(1, 'SarumanGifts', 'MordorGmbH')");
+        List<String> strings2 = OperationUtils.parseParams("neitherOf(1, 2, 'SarumanGifts', 'MordorGmbH')");
+        List<String> strings3 = OperationUtils.parseParams("neitherOf(1, 2, ['SarumanGifts', 'MordorGmbH'])");
     }
 
     //neitherOf(String, String)

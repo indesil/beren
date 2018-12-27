@@ -12,7 +12,7 @@ import pl.jlabs.beren.compilator.configuration.OperationConfig;
 import pl.jlabs.beren.compilator.definitions.*;
 import pl.jlabs.beren.compilator.methods.TypeMetadata;
 import pl.jlabs.beren.compilator.utils.CodeUtils;
-import pl.jlabs.beren.compilator.utils.OperationExtractorExtractor;
+import pl.jlabs.beren.compilator.utils.OperationUtils;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
@@ -26,15 +26,16 @@ import java.util.stream.Stream;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static pl.jlabs.beren.compilator.configuration.OperationConfig.OperationType.CLASS_METHOD;
 import static pl.jlabs.beren.compilator.configuration.OperationConfig.OperationType.INTERNAL_VALIDATOR_METHOD;
 import static pl.jlabs.beren.compilator.definitions.PlaceHolders.PARAM_NAME;
-import static pl.jlabs.beren.compilator.utils.CodeUtils.THIS_PARAM;
+import static pl.jlabs.beren.compilator.definitions.PlaceHolders.THIS_;
 import static pl.jlabs.beren.compilator.utils.CodeUtils.normalizeGetterName;
-import static pl.jlabs.beren.compilator.utils.OperationExtractorExtractor.extractMethodName;
+import static pl.jlabs.beren.compilator.utils.OperationUtils.extractMethodName;
 
 public class InternalMethodGenerator {
 
@@ -181,7 +182,7 @@ public class InternalMethodGenerator {
                 //ten message moglby pokazywac tylko te pola ktorych naprawde nie mozna zmatchowac
                 String errorMessage = format("Not all fields %s could be matched to variable %s!", names, validationParameter);
                 processingEnv.getMessager().printMessage(ERROR, errorMessage);
-                return Collections.emptyList();
+                return emptyList();
             }
         }
 
@@ -198,7 +199,7 @@ public class InternalMethodGenerator {
             }
             String errorMessage = format("No variables from %s matched pattern %s", validationParameter, fieldDefinition.getPattern());
             processingEnv.getMessager().printMessage(ERROR, errorMessage);
-            return Collections.emptyList();
+            return emptyList();
         }
 
         if(CodeUtils.isNotVoidType(fieldDefinition.getType())) {
@@ -215,14 +216,13 @@ public class InternalMethodGenerator {
 
         String errorMessage = format("Could not match %s to any variable type %s!", fieldDefinition, validationParameter);
         processingEnv.getMessager().printMessage(ERROR, errorMessage);
-        return Collections.emptyList();
-        //throw new IllegalArgumentException(errorMessage);
+        return emptyList();
     }
 
     private OperationDefinition parseOperation(String operation) {
         return new OperationDefinition()
-                .withNameRef(OperationExtractorExtractor.extractOperationRef(operation))
-                .withArgsValues(OperationExtractorExtractor.parseParams(operation));
+                .withNameRef(OperationUtils.extractOperationRef(operation))
+                .withArgsValues(OperationUtils.parseParams(operation));
     }
 
     //no todbra takie zalozenie dla MVP 1
@@ -264,7 +264,7 @@ public class InternalMethodGenerator {
     private OperationConfig createCustomDefinedOperation(ExecutableElement executableElement, OperationDefinition operationDefinition) {
         return new OperationConfig()
                 .withOperationCall(executableElement.getSimpleName().toString())
-                .withArgs(asList(THIS_PARAM))
+                .withArgs(asList(THIS_))
                 .withDefaultMessage("NOT MESSAGE")
                 .withOperationType(executableElement.getAnnotation(Validate.class) != null ? INTERNAL_VALIDATOR_METHOD : CLASS_METHOD);
     }

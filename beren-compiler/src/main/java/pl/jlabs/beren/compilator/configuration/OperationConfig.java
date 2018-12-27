@@ -4,8 +4,10 @@ import java.util.List;
 
 public class OperationConfig {
     private String operationCall;
+    //must have!
     private String defaultMessage;
     private List<String> args;
+    //pointless always static method for operation config
     private OperationType operationType = OperationType.STATIC_METHOD;
 
     public String getOperationCall() {

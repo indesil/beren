@@ -1,15 +1,17 @@
 package pl.jlabs.beren.compilator.configuration;
 
 import org.yaml.snakeyaml.Yaml;
-import pl.jlabs.beren.compilator.utils.OperationExtractorExtractor;
+import pl.jlabs.beren.compilator.utils.OperationUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static pl.jlabs.beren.compilator.utils.CodeUtils.THIS_PARAM;
+import static pl.jlabs.beren.compilator.definitions.PlaceHolders.THIS_;
+import static pl.jlabs.beren.compilator.utils.OperationUtils.strapFromParams;
 
 public class ConfigurationLoader {
     private static final String DEFAULT_CONFIG = "beren-default-configuration.yaml";
@@ -28,7 +30,7 @@ public class ConfigurationLoader {
                 .getClassLoader()
                 .getResourceAsStream(fileName)) {
             if(inputStream != null) {
-                return setupArgs(yaml.loadAs(inputStream, BerenConfig.class));
+                return createConfiguration(yaml.loadAs(inputStream, RawConfiguration.class));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,16 +39,32 @@ public class ConfigurationLoader {
         return null;
     }
 
-    private static BerenConfig setupArgs(BerenConfig berenConfig) {
-        for (Map.Entry<String, OperationConfig> entry : berenConfig.getOperationsMappings().entrySet()) {
-            entry.getValue().setArgs(listOfArgs(entry.getKey(), entry.getValue().getOperationCall()));
+    private static BerenConfig createConfiguration(RawConfiguration rawConfiguration) {
+        Map<String, OperationConfig> mappings = new HashMap<>(rawConfiguration.getOperationsMappings().size());
+
+        for (Map.Entry<String, OperationConfig> rawConf : rawConfiguration.getOperationsMappings().entrySet()) {
+            String key = strapFromParams(rawConf.getKey());
+            tryPutNewConfiguration(mappings, key, formatOperationConfig(rawConf));
         }
-        return berenConfig;
+        return new BerenConfig().withOperationsMappings(mappings);
     }
 
-    private static List<String> listOfArgs(String key, String operationCall) {
-        List<String> keyParams = OperationExtractorExtractor.getParams(key);
-        List<String> operationParams = OperationExtractorExtractor.getParams(operationCall);
+    private static void tryPutNewConfiguration(Map<String, OperationConfig> mappings, String key, OperationConfig operationConfig) {
+        OperationConfig previousEntry = mappings.put(key, operationConfig);
+        if(previousEntry != null) {
+            throw new IllegalArgumentException(format("Duplicated mapping configuration for operation: %s", key));
+        }
+    }
+
+    private static OperationConfig formatOperationConfig(Map.Entry<String, OperationConfig> entry) {
+        return entry.getValue().withArgs(listOfArgs(entry));
+    }
+
+    private static List<String> listOfArgs(Map.Entry<String, OperationConfig> entry) {
+        String key = entry.getKey();
+        List<String> keyParams = OperationUtils.getParams(key);
+        String operationCall = entry.getValue().getOperationCall();
+        List<String> operationParams = OperationUtils.getParams(operationCall);
         validateParams(key, operationCall, keyParams, operationParams);
         return operationParams;
     }
@@ -56,7 +74,7 @@ public class ConfigurationLoader {
             throw new IllegalArgumentException(format("Invalid params mapping for key: %s and operation call: %s", key, operationCall));
         }
 
-        if(!operationParams.contains(THIS_PARAM)) {
+        if(!operationParams.contains(THIS_)) {
             throw new IllegalArgumentException(format("Operation call: %s is not referring to validated parameter(this)!", operationCall));
         }
 
@@ -70,12 +88,22 @@ public class ConfigurationLoader {
         if(customConfig == null) {
             return defaultConfig;
         }
-
         BerenConfig berenConfig = new BerenConfig();
-
+        //!!! nie ma juz walidacji ze ktos zdefiniowal sobie 2 razy ten sam wpis!!!!
+        //!!!! to znaczy ze between(a) w custom bedzie napdpisywal ten z efault between(a, b)
         berenConfig.getOperationsMappings().putAll(defaultConfig.getOperationsMappings());
         berenConfig.getOperationsMappings().putAll(customConfig.getOperationsMappings());
 
         return berenConfig;
+    }
+
+    private static Map<String, OperationConfig> mergeOperationMappings(Map<String, OperationConfig> defaultConfig, Map<String, OperationConfig> customConfig) {
+        Map<String, OperationConfig> operationConfig = new HashMap<>(defaultConfig);
+
+        for (Map.Entry<String, OperationConfig> customEntry : customConfig.entrySet()) {
+            tryPutNewConfiguration(operationConfig, customEntry.getKey(), customEntry.getValue());
+        }
+
+        return operationConfig;
     }
 }

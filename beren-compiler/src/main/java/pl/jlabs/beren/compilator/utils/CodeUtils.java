@@ -12,7 +12,6 @@ public class CodeUtils {
     private static final String INTERNAL_METHOD_PREFIX = "internal_";
 
     public static final String VALIDATION_RESULTS_PARAM = "validationResults";
-    public static final String THIS_PARAM = "this";
 
     public static final String createInternalMethodName(String methodName) {
         return INTERNAL_METHOD_PREFIX + methodName;
@@ -23,17 +22,26 @@ public class CodeUtils {
         return methodToImplement.getParameters().get(0);
     }
 
+    public static String extractFieldName(String getterMethod) {
+        String getter = getGetterPlainName(getterMethod);
+        return getter.substring(0, 1).toLowerCase() + getter.substring(1);
+    }
+
     public static boolean isGetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
         return methodName.startsWith(GET_PREFIX) || methodName.startsWith(IS_PREFIX);
     }
 
     public static String normalizeGetterName(String getterName) {
+        return getGetterPlainName(getterName).toLowerCase();
+    }
+
+    private static String getGetterPlainName(String getterName) {
         if(getterName.startsWith(GET_PREFIX)) {
-            return getterName.substring(3).toLowerCase();
+            return getterName.substring(3);
         }
 
-        return getterName.substring(2).toLowerCase();
+        return getterName.substring(2);
     }
 
     public static boolean isNotVoidType(TypeMirror type) {

@@ -4,6 +4,7 @@ import pl.jlabs.beren.annotations.BreakingStrategy;
 import pl.jlabs.beren.annotations.SourceType;
 import pl.jlabs.beren.annotations.Validate;
 import pl.jlabs.beren.compilator.configuration.BerenConfig;
+import pl.jlabs.beren.compilator.parser.source.ParserContext;
 import pl.jlabs.beren.compilator.parser.source.SourceParserFactory;
 import pl.jlabs.beren.compilator.utils.MethodsUtil;
 
@@ -11,6 +12,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +51,16 @@ public class DefinitionParser {
     private ValidationDefinition createDefinitionFromProperSource(ExecutableElement methodToImplement, Map<String, ExecutableElement> methodReferences) {
         Validate validateAnnotation = methodToImplement.getAnnotation(Validate.class);
         SourceType sourceType = validateAnnotation.source().type();
-        return sourceParserFactory.obtainParserForSource(sourceType).parse(methodToImplement, methodReferences);
+        return sourceParserFactory.obtainParserForSource(sourceType)
+                .parse(createParserContext(methodToImplement, methodReferences));
+    }
+
+    private ParserContext createParserContext(ExecutableElement methodToImplement, Map<String, ExecutableElement> methodReferences) {
+        VariableElement validationMethodParam = getValidationMethodParam(methodToImplement);
+        return new ParserContext()
+                .withMethodReferences(methodReferences)
+                .withMethodToImplement(methodToImplement)
+                .withValidationMethodParam(validationMethodParam)
+                .withValidationParamFieldsGetters(extractValidationParamFieldsGetters(validationMethodParam, processingEnv));
     }
 }

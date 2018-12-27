@@ -38,7 +38,6 @@ public class DefinitionUtils {
                return rawFieldDefinition;
             }
             processingEnv.getMessager().printMessage(ERROR, format(INVALID_SELECTORS_NUMBER, rawFieldDefinition, methodName));
-            return null;
         } catch (PatternSyntaxException e) {
             processingEnv.getMessager().printMessage(ERROR, format(INVALID_PATTERN, pattern, e.getMessage()));
         }
