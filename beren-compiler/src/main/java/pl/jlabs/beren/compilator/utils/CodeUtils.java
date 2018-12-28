@@ -1,8 +1,12 @@
 package pl.jlabs.beren.compilator.utils;
 
+import pl.jlabs.beren.compilator.parser.IterationType;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 import java.util.regex.Pattern;
+
+import static pl.jlabs.beren.compilator.parser.IterationType.NONE;
 
 public class CodeUtils {
     private static final String VOID_TYPE = "java.lang.Void";
@@ -12,9 +16,14 @@ public class CodeUtils {
     private static final String INTERNAL_METHOD_PREFIX = "internal_";
     private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
     public static final String VALIDATION_RESULTS_PARAM = "validationResults";
+    public static final String ITERATION_PARAM = "value";
 
     public static final String createTemplatePlaceHolder(String key) {
         return "%\\{" + key + "\\}";
+    }
+
+    public static boolean iterationValidation(IterationType iterationType) {
+        return !iterationType.equals(NONE);
     }
 
     public static final String createPlaceHolderParams(String value) {
@@ -28,6 +37,7 @@ public class CodeUtils {
 
         return value;
     }
+
     public static final String createInternalMethodName(String methodName) {
         return INTERNAL_METHOD_PREFIX + methodName;
     }

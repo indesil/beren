@@ -1,17 +1,17 @@
 package pl.jlabs.beren.test.model;
 
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 
 public class Orders {
-    private Map<String, Invoice> invoiceMap;
+    private HashMap<String, Invoice> invoiceMap;
     private Set<Object> additionalData;
 
-    public Map<String, Invoice> getInvoiceMap() {
+    public HashMap<String, Invoice> getInvoiceMap() {
         return invoiceMap;
     }
 
-    public void setInvoiceMap(Map<String, Invoice> invoiceMap) {
+    public void setInvoiceMap(HashMap<String, Invoice> invoiceMap) {
         this.invoiceMap = invoiceMap;
     }
 

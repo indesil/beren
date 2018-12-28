@@ -2,6 +2,8 @@ package pl.jlabs.beren.compilator.parser;
 
 import com.squareup.javapoet.ClassName;
 
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +39,11 @@ public class FieldValidationDefinition {
     private String methodName;
     private ClassName operationClass;
     private Map<String, String> params;
+    private GetterDefinition getterDefinition;
+    private ExecutableElement getterMethod;
     private List<String> paramsOrder;
     private OperationType operationType = OperationType.STATIC_METHOD;
+    private IterationType iterationType = IterationType.NONE;
 
     public ClassName getOperationClass() {
         return operationClass;
@@ -55,6 +60,15 @@ public class FieldValidationDefinition {
 
     public FieldValidationDefinition withMethodName(String methodName) {
         this.methodName = methodName;
+        return this;
+    }
+
+    public GetterDefinition getGetterDefinition() {
+        return getterDefinition;
+    }
+
+    public FieldValidationDefinition withGetterDefinition(GetterDefinition getterDefinition) {
+        this.getterDefinition = getterDefinition;
         return this;
     }
 
@@ -82,6 +96,15 @@ public class FieldValidationDefinition {
 
     public FieldValidationDefinition withOperationType(FieldValidationDefinition.OperationType operationType) {
         this.operationType = operationType;
+        return this;
+    }
+
+    public IterationType getIterationType() {
+        return iterationType;
+    }
+
+    public FieldValidationDefinition withIterationType(IterationType iterationType) {
+        this.iterationType = iterationType;
         return this;
     }
 

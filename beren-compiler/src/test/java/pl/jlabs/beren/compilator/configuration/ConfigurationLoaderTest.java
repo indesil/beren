@@ -1,10 +1,6 @@
 package pl.jlabs.beren.compilator.configuration;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
-import pl.jlabs.beren.compilator.utils.OperationUtils;
-
-import java.util.List;
 
 class ConfigurationLoaderTest {
 

@@ -1,9 +1,13 @@
 package pl.jlabs.beren.test.model;
 
+import java.util.List;
+
 public class OrdersCreateRequest {
     private String source;
     private short requestId;
     private Orders orders;
+    private List<Address> addresses;
+
 
     public String getSource() {
         return source;
@@ -27,5 +31,14 @@ public class OrdersCreateRequest {
 
     public void setOrders(Orders orders) {
         this.orders = orders;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public OrdersCreateRequest setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+        return this;
     }
 }

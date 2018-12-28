@@ -10,8 +10,10 @@ public interface ErrorMessages {
 
     String SOURCE_NOT_SUPPORTED = "Source %s is not supported in current version!";
     String VALIDATION_FIELDS_EMPTY = "Could not find any fields validation definition for method %s";
+    String VALIDATION_DEFINITION_FAILED = "%s was not applied to any field!";
 
     String OPERATION_NOT_FOUND = "Could not find operation %s!";
+    String INVALID_OPERATION = "Invalid operation %s!";
     String OPERATION_PARAMS_NUMBER_MISMATCH = "Operation %s has invalid number of input params %s";
     String OPERATION_MESSAGE_NOT_FOUND = "Operation %s does not have defined any error message!";
     String FIELD_GETTER_NOT_FOUND = "Could not find getter for field %s.%s";

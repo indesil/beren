@@ -12,5 +12,8 @@ operationsMappings:
     operationCall: java.util.Objects.nonNull(this)
     defaultMessage: "%{paramName} must not be null!"
   notEmpty:
-    operationCall: org.apache.commons.lang3.StringUtils.isNotEmpty(this)
-    defaultMessage: "%{paramName} must not be empty"
+    operationCall: pl.jlabs.beren.operations.Operations.notEmpty(this)
+    defaultMessage: "%{paramName} must not be empty!"
+  collectionNotEmpty:
+    operationCall: pl.jlabs.beren.operations.Operations.collectionIsNotEmpty(this)
+    defaultMessage: "%{paramName} must not be empty!"

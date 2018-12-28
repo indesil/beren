@@ -1,6 +1,7 @@
 package pl.jlabs.beren.compilator.parser;
 
 import javax.lang.model.type.TypeMirror;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class RawFieldDefinition {
@@ -63,5 +64,17 @@ public class RawFieldDefinition {
 
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public String toString() {
+        return "Definition{" +
+                "name='" + name + '\'' +
+                ", names=" + Arrays.toString(names) +
+                ", type=" + type +
+                ", pattern=" + pattern +
+                ", operation='" + operation + '\'' +
+                ", message='" + message + '\'' +
+                '}';
     }
 }
