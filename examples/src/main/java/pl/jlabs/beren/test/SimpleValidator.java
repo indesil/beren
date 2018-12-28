@@ -8,7 +8,6 @@ import java.util.Set;
 
 @Validator(breakingStrategy = BreakingStrategy.THROW_ON_FIRST)
 public interface SimpleValidator {
-
     @Validate({
             @Field(name = "source", operation = "neitherOf(['Saruman,Gifts', 'MordorGmbH'])"),
             @Field(name = "requestId", operation = "greaterThan(0)", message = "requestId should be bigger than 0!"),
@@ -30,6 +29,8 @@ public interface SimpleValidator {
 
     @Id("invoiceValidation")
     @Validate({
+            //to jest chyba invalid...
+            //@Field(type = void.class, operation = "notEmpty"),
             @Field(type = String.class, operation = "notEmpty"),
             @Field(type = Double.class, operation = "greaterThan(0.0)"),
             @Field(name = "paymentForm", operation = "myCustomInlineValidation", message = "myCustomInlineValidation!"),

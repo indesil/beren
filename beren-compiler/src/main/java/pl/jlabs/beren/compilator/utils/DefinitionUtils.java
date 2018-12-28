@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import pl.jlabs.beren.annotations.Field;
 import pl.jlabs.beren.compilator.parser.RawFieldDefinition;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import java.util.Objects;
@@ -14,9 +13,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static java.util.Objects.nonNull;
-import static javax.tools.Diagnostic.Kind.ERROR;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static pl.jlabs.beren.compilator.utils.CodeUtils.isNotVoidType;
 import static pl.jlabs.beren.compilator.utils.ErrorMessages.INVALID_PATTERN;
@@ -24,7 +21,7 @@ import static pl.jlabs.beren.compilator.utils.ErrorMessages.INVALID_SELECTORS_NU
 
 public class DefinitionUtils {
 
-    public static RawFieldDefinition createRawFieldDefinition(Field field, String methodName, ProcessingEnvironment processingEnv) {
+    public static RawFieldDefinition createRawFieldDefinition(Field field, String methodName, ProcessingFacade processingFacade) {
         String pattern = field.pattern();
         try{
             RawFieldDefinition rawFieldDefinition = new RawFieldDefinition()
@@ -37,9 +34,9 @@ public class DefinitionUtils {
             if(isDefinitionValid(rawFieldDefinition)) {
                return rawFieldDefinition;
             }
-            processingEnv.getMessager().printMessage(ERROR, format(INVALID_SELECTORS_NUMBER, rawFieldDefinition, methodName));
+            processingFacade.error(INVALID_SELECTORS_NUMBER, rawFieldDefinition, methodName);
         } catch (PatternSyntaxException e) {
-            processingEnv.getMessager().printMessage(ERROR, format(INVALID_PATTERN, pattern, e.getMessage()));
+            processingFacade.error(INVALID_PATTERN, pattern, e.getMessage());
         }
 
         return null;
@@ -62,7 +59,6 @@ public class DefinitionUtils {
         } catch (MirroredTypeException mte) {
             return mte.getTypeMirror();
         }
-
         return null;
     }
 }

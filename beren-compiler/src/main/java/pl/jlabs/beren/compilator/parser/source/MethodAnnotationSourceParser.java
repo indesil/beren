@@ -3,13 +3,11 @@ package pl.jlabs.beren.compilator.parser.source;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.jlabs.beren.annotations.Field;
 import pl.jlabs.beren.annotations.Validate;
-import pl.jlabs.beren.compilator.configuration.BerenConfig;
 import pl.jlabs.beren.compilator.configuration.OperationConfig;
 import pl.jlabs.beren.compilator.parser.*;
-import pl.jlabs.beren.compilator.utils.CodeUtils;
 import pl.jlabs.beren.compilator.utils.OperationUtils;
+import pl.jlabs.beren.compilator.utils.ProcessingFacade;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -17,33 +15,30 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static javax.tools.Diagnostic.Kind.ERROR;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static pl.jlabs.beren.compilator.parser.FieldValidationDefinition.OperationType.*;
 import static pl.jlabs.beren.compilator.parser.PlaceHolders.PARAM_NAME_;
 import static pl.jlabs.beren.compilator.parser.PlaceHolders.THIS_;
-import static pl.jlabs.beren.compilator.utils.CodeUtils.extractFieldName;
 import static pl.jlabs.beren.compilator.utils.CodeUtils.isNotVoidType;
 import static pl.jlabs.beren.compilator.utils.DefinitionUtils.createRawFieldDefinition;
 import static pl.jlabs.beren.compilator.utils.ErrorMessages.*;
+import static pl.jlabs.beren.compilator.utils.MethodsUtil.extractFieldName;
+import static pl.jlabs.beren.compilator.utils.MethodsUtil.normalizeGetterName;
 import static pl.jlabs.beren.compilator.utils.OperationUtils.parseOperation;
 import static pl.jlabs.beren.compilator.utils.OperationUtils.strapFromParams;
 
 public class MethodAnnotationSourceParser implements SourceParser {
-    private ProcessingEnvironment processingEnv;
-    private BerenConfig berenConfig;
+    private ProcessingFacade processingFacade;
     private TypeMirror mapType;
     private TypeMirror collectionType;
 
-    public MethodAnnotationSourceParser(ProcessingEnvironment processingEnv, BerenConfig berenConfig) {
-        this.processingEnv = processingEnv;
-        this.berenConfig = berenConfig;
-        mapType = processingEnv.getElementUtils().getTypeElement("java.util.Map").asType();
-        collectionType = processingEnv.getElementUtils().getTypeElement("java.util.Collection").asType();
+    public MethodAnnotationSourceParser(ProcessingFacade processingFacade) {
+        this.processingFacade = processingFacade;
+        mapType = processingFacade.getElementType(Map.class);
+        collectionType = processingFacade.getElementType(Collection.class);
     }
 
     @Override
@@ -60,17 +55,18 @@ public class MethodAnnotationSourceParser implements SourceParser {
     private List<FieldValidationDefinition> createFieldsDefinitions(Field[] fields, ParserContext parserContext) {
         String methodName = parserContext.getMethodToImplementName();
         if(fields == null || fields.length == 0) {
-            processingEnv.getMessager().printMessage(ERROR, format(VALIDATION_FIELDS_EMPTY, methodName));
+            processingFacade.error(VALIDATION_FIELDS_EMPTY, methodName);
             return emptyList();
         }
 
         List<FieldValidationDefinition> fieldValidationDefinitions = new ArrayList<>();
         for (Field field : fields) {
-            RawFieldDefinition rawFieldDefinition = createRawFieldDefinition(field, methodName, processingEnv);
+            RawFieldDefinition rawFieldDefinition = createRawFieldDefinition(field, methodName, processingFacade);
             if(rawFieldDefinition != null) {
                 List<FieldValidationDefinition> fieldsDefinition = createDefinitionsForField(rawFieldDefinition, parserContext);
                 if(fieldsDefinition.isEmpty()) {
-                    processingEnv.getMessager().printMessage(ERROR, format(VALIDATION_DEFINITION_FAILED, rawFieldDefinition));
+                    processingFacade.error(VALIDATION_DEFINITION_FAILED, rawFieldDefinition);
+                    break;
                 }
                 fieldValidationDefinitions.addAll(fieldsDefinition);
             } else {
@@ -100,7 +96,8 @@ public class MethodAnnotationSourceParser implements SourceParser {
     private List<FieldValidationDefinition> createDefinitionForSingleName(RawFieldDefinition rawFieldDefinition, ParserContext parserContext) { ;
         ExecutableElement fieldGetter = findFieldGetter(rawFieldDefinition.getName(), parserContext);
         if(fieldGetter != null) {
-            return singletonList(createFieldDefinition(rawFieldDefinition, parserContext, fieldGetter));
+            FieldValidationDefinition fieldDefinition = createFieldDefinition(rawFieldDefinition, parserContext, fieldGetter);
+            return fieldDefinition != null ? singletonList(fieldDefinition) : emptyList();
         }
         return emptyList();
     }
@@ -110,6 +107,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
                 .map(fieldName -> findFieldGetter(fieldName, parserContext))
                 .filter(Objects::nonNull)
                 .map(fieldGetter -> createFieldDefinition(rawFieldDefinition, parserContext, fieldGetter))
+                .filter(Objects::nonNull)
                 .collect(toList());
     }
 
@@ -118,19 +116,16 @@ public class MethodAnnotationSourceParser implements SourceParser {
         return parserContext.getValidationParamFieldsGetters().stream()
                 .filter(getter -> pattern.matcher(extractFieldName(getter.getSimpleName().toString())).matches())
                 .map(getterName -> createFieldDefinition(rawFieldDefinition, parserContext, getterName))
+                .filter(Objects::nonNull)
                 .collect(toList());
     }
 
     private List<FieldValidationDefinition> createDefinitionFromType(RawFieldDefinition rawFieldDefinition, ParserContext parserContext) {
         return parserContext.getValidationParamFieldsGetters().stream()
-                .filter(getter -> isAssignable(getter.getReturnType(), rawFieldDefinition.getType()))
+                .filter(getter -> processingFacade.isAssignable(getter.getReturnType(), rawFieldDefinition.getType()))
                 .map(getter -> createFieldDefinition(rawFieldDefinition, parserContext, getter))
                 .filter(Objects::nonNull)
                 .collect(toList());
-    }
-
-    private boolean isAssignable(TypeMirror getterReturnType, TypeMirror definitionType) {
-        return processingEnv.getTypeUtils().isAssignable(processingEnv.getTypeUtils().erasure(getterReturnType), definitionType);
     }
 
     private FieldValidationDefinition createFieldDefinition(RawFieldDefinition rawFieldDefinition, ParserContext parserContext, ExecutableElement getterMethod) {
@@ -146,7 +141,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
             return fromStaticMethod(operationRef, rawFieldDefinition, params, operation.getKey(), getterMethod);
         }
 
-        processingEnv.getMessager().printMessage(ERROR, format(INVALID_OPERATION, rawFieldDefinition.getOperation()));
+        processingFacade.error(INVALID_OPERATION, rawFieldDefinition.getOperation());
         return null;
     }
 
@@ -154,13 +149,13 @@ public class MethodAnnotationSourceParser implements SourceParser {
         String lowercaseFieldName = fieldName.toLowerCase();
         Optional<ExecutableElement> fieldGetter = parserContext.getValidationParamFieldsGetters()
                 .stream()
-                .filter(getter -> CodeUtils.normalizeGetterName(getter.getSimpleName().toString()).equals(lowercaseFieldName))
+                .filter(getter -> normalizeGetterName(getter.getSimpleName().toString()).equals(lowercaseFieldName))
                 .findFirst();
-        if(fieldGetter.isPresent()) {
-            return fieldGetter.get();
-        }
-        processingEnv.getMessager().printMessage(ERROR, format(FIELD_GETTER_NOT_FOUND, parserContext.getValidationMethodParamName(), fieldName));
-        return null;
+
+        return fieldGetter.orElseGet(() -> {
+            processingFacade.error(FIELD_GETTER_NOT_FOUND, parserContext.getValidationMethodParamName(), fieldName);
+            return null;
+        });
     }
 
     private FieldValidationDefinition fromClassMethodRef(ExecutableElement executableElement,
@@ -168,7 +163,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
                                                          Map<String, String> params,
                                                          IterationType iterationType,
                                                          ExecutableElement getterMethod) {
-        FieldValidationDefinition.OperationType operationType = executableElement.getAnnotation(Validate.class) != null ? INTERNAL_VALIDATOR_METHOD : CLASS_METHOD;
+        FieldValidationDefinition.OperationType operationType = determineOperationType(executableElement);
         return new FieldValidationDefinition()
                 .withErrorMessageTemplate(determineErrorMessageTemplate(rawFieldDefinition, operationType))
                 .withMethodName(executableElement.getSimpleName().toString())
@@ -185,7 +180,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
                                                        Map<String, String> params,
                                                        IterationType iterationType,
                                                        ExecutableElement getterMethod) {
-        OperationConfig operationConfig = berenConfig.getOperationsMappings().get(operationRef);
+        OperationConfig operationConfig = processingFacade.getOperationMapping(operationRef);
         if(operationConfig != null) {
             String operationCall = operationConfig.getOperationCall();
             return new FieldValidationDefinition()
@@ -199,8 +194,12 @@ public class MethodAnnotationSourceParser implements SourceParser {
                     .withOperationType(STATIC_METHOD);
         }
 
-        processingEnv.getMessager().printMessage(ERROR, format(OPERATION_NOT_FOUND, operationRef));
+        processingFacade.error(OPERATION_NOT_FOUND, operationRef);
         return null;
+    }
+
+    private FieldValidationDefinition.OperationType determineOperationType(ExecutableElement executableElement) {
+        return executableElement.getAnnotation(Validate.class) != null ? INTERNAL_VALIDATOR_METHOD : CLASS_METHOD;
     }
 
     private GetterDefinition createGetterDefinition(ExecutableElement getterMethod, Map<String, String> params) {
@@ -211,11 +210,11 @@ public class MethodAnnotationSourceParser implements SourceParser {
     }
 
     private GetterDefinition.ReturnType extractReturnType(TypeMirror returnType) {
-        if(processingEnv.getTypeUtils().isAssignable(processingEnv.getTypeUtils().erasure(returnType), mapType)) {
+        if(processingFacade.isAssignable(returnType, mapType)) {
             return GetterDefinition.ReturnType.MAP;
         }
 
-        if(processingEnv.getTypeUtils().isAssignable(processingEnv.getTypeUtils().erasure(returnType), collectionType)) {
+        if(processingFacade.isAssignable(returnType, collectionType)) {
             return GetterDefinition.ReturnType.COLLECTION;
         }
 
@@ -243,12 +242,12 @@ public class MethodAnnotationSourceParser implements SourceParser {
         }
 
         String operation = strapFromParams(operationName);
-        OperationConfig operationConfig = berenConfig.getOperationsMappings().get(operation);
+        OperationConfig operationConfig = processingFacade.getOperationMapping(operation);
         if(operationConfig != null) {
             return operationConfig.getDefaultMessage();
         }
 
-        processingEnv.getMessager().printMessage(ERROR, format(OPERATION_MESSAGE_NOT_FOUND, operation));
+        processingFacade.error(OPERATION_MESSAGE_NOT_FOUND, operation);
         return "";
     }
 
@@ -269,7 +268,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
             }
             return params;
         }
-        processingEnv.getMessager().printMessage(ERROR, format(OPERATION_PARAMS_NUMBER_MISMATCH, operationConfig.getOperationCall(), paramValues));
+        processingFacade.error(OPERATION_PARAMS_NUMBER_MISMATCH, operationConfig.getOperationCall(), paramValues);
         return new HashMap<>();
     }
 
@@ -277,7 +276,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
         Map<String, String> params = new HashMap<>();
         String getterCall = validationParamName + "." + fieldGetter + "()";
         params.put(THIS_, getterCall);
-        params.put(PARAM_NAME_, CodeUtils.extractFieldName(fieldGetter));
+        params.put(PARAM_NAME_, extractFieldName(fieldGetter));
 
         return params;
     }
