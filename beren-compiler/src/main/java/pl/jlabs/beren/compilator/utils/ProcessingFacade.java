@@ -16,7 +16,6 @@ import static javax.lang.model.util.ElementFilter.constructorsIn;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.MANDATORY_WARNING;
-import static pl.jlabs.beren.compilator.utils.CodeUtils.createValidatorName;
 
 public class ProcessingFacade {
     private ProcessingEnvironment processingEnv;

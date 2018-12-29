@@ -4,6 +4,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import pl.jlabs.beren.BerenUtils;
 import pl.jlabs.beren.compilator.parser.ValidatorDefinition;
 import pl.jlabs.beren.compilator.utils.ProcessingFacade;
 
@@ -17,18 +18,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import static pl.jlabs.beren.compilator.methods.MethodsCodeGenerator.generateMethodsCode;
-import static pl.jlabs.beren.compilator.utils.CodeUtils.createValidatorName;
 
-public class ClassCodeGenerator {
+class ClassCodeGenerator {
 
     private ProcessingFacade processingFacade;
 
-    public ClassCodeGenerator(ProcessingFacade processingFacade) {
+    ClassCodeGenerator(ProcessingFacade processingFacade) {
         this.processingFacade = processingFacade;
     }
 
-    public void generateJavaClass(Element typeElement, ValidatorDefinition validatorDefinition) {
-        String javaClassName = createValidatorName(typeElement);
+    void generateJavaClass(Element typeElement, ValidatorDefinition validatorDefinition) {
+        String javaClassName = BerenUtils.createValidatorName(typeElement.getSimpleName().toString());
         JavaFileObject sourceFile = processingFacade.createJavaSourceFileForType(javaClassName, typeElement);
         if(sourceFile != null) {
             fillSourceFileWithCode(javaClassName, typeElement, validatorDefinition, sourceFile);

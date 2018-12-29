@@ -3,27 +3,41 @@ package pl.jlabs.beren.test;
 
 import pl.jlabs.beren.annotations.*;
 import pl.jlabs.beren.test.model.*;
+import pl.jlabs.beren.test.model.customer.Gender;
 
 import java.util.Set;
 
 @Validator(breakingStrategy = BreakingStrategy.THROW_ON_FIRST)
-public interface SimpleValidator {
+public abstract class SimpleValidator {
+
+    public SimpleValidator(int a, int b) {
+
+    }
+
+    public SimpleValidator(int a, String b) {
+
+    }
+
+    public SimpleValidator(Integer i, Object o) {
+
+    }
+
     @Validate({
             @Field(name = "source", operation = "neitherOf(['Saruman,Gifts', 'MordorGmbH'])"),
             @Field(name = "requestId", operation = "greaterThan(0)", message = "requestId should be bigger than 0!"),
-            @Field(name = "addresses", operation = "#forEachValue(addressIsValid)", message = "invalid address!"),
+            @Field(name = "addresses", operation = "#forEachValue(addressIsValid)", message = "%{paramName} invalid address!"),
             @Field(name = "orders", operation = "validateOrders")
     })
-    void validateRequest(OrdersCreateRequest request);
+    abstract void validateRequest(OrdersCreateRequest request);
 
-    @Validate({
+    @Validate(nullable = true, value = {
             @Field(name = "invoiceMap", operation = "#forEachValue(invoiceValidation)"),
             @Field(name = "additionalData", operation = "notEmpty"),
             @Field(name = "additionalData", operation = "isAdditionalDataValid", message = "invalid data was given")
     })
-    void validateOrders(Orders orders);
+    abstract void validateOrders(Orders orders);
 
-    default boolean isAdditionalDataValid(Set<Object> data) {
+    boolean isAdditionalDataValid(Set<Object> data) {
         return data != null;
     }
 
@@ -37,10 +51,10 @@ public interface SimpleValidator {
             @Field(name = "customer", operation = "validateCustomer")
 
     })
-    void validateEntryValue(Invoice invoice);
+    abstract void validateEntryValue(Invoice invoice);
 
     @Id("myCustomInlineValidation")
-    default boolean customInlineValidator(String paymentForm) {
+    boolean customInlineValidator(String paymentForm) {
         return "cash".equals(paymentForm);
     }
 
@@ -49,12 +63,18 @@ public interface SimpleValidator {
             value = {
             @Field(names = {"firstName", "lastName", "title"}, operation = "notEmpty"),
             @Field(pattern = ".*Name", operation = "notNull"),
+            @Field(type = Enum.class, operation = "cosiestanie", message = "dasda"),
             @Field(name = "address", operation = "addressIsValid", message = "Invalid address")
     })
-    void validateCustomer(Customer customer);
+    abstract void validateCustomer(Customer customer);
 
-    default boolean addressIsValid(Address address) {
+
+    boolean addressIsValid(Address address) {
         return address.getAddressLine() != null && address.getCity() != null && address.getCountry() != null && address.getHouseNumber() > 0;
+    }
+
+    boolean cosiestanie(Gender gender) {
+        return true;
     }
        // TO DO
 

@@ -20,8 +20,7 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static pl.jlabs.beren.compilator.parser.FieldValidationDefinition.OperationType.*;
-import static pl.jlabs.beren.compilator.parser.PlaceHolders.PARAM_NAME_;
-import static pl.jlabs.beren.compilator.parser.PlaceHolders.THIS_;
+import static pl.jlabs.beren.compilator.parser.PlaceHolders.*;
 import static pl.jlabs.beren.compilator.utils.CodeUtils.isNotVoidType;
 import static pl.jlabs.beren.compilator.utils.DefinitionUtils.createRawFieldDefinition;
 import static pl.jlabs.beren.compilator.utils.ErrorMessages.*;
@@ -276,6 +275,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
         Map<String, String> params = new HashMap<>();
         String getterCall = validationParamName + "." + fieldGetter + "()";
         params.put(THIS_, getterCall);
+        params.put(INPUT_, validationParamName);
         params.put(PARAM_NAME_, extractFieldName(fieldGetter));
 
         return params;

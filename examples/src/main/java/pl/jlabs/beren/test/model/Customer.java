@@ -1,5 +1,7 @@
 package pl.jlabs.beren.test.model;
 
+import pl.jlabs.beren.test.model.customer.Gender;
+
 public class Customer {
     private String firstName;
     private String lastName;

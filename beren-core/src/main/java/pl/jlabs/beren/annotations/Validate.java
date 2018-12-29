@@ -9,6 +9,6 @@ import static pl.jlabs.beren.annotations.SourceType.METHOD_DEFINITION;
 public @interface Validate {
     Source source() default @Source(type = METHOD_DEFINITION);
     boolean nullable() default false;
-    String nullableMessage() default "%{paramName} must not be null!";
+    String nullableMessage() default "%{input} must not be null!";
     Field[] value();
 }
