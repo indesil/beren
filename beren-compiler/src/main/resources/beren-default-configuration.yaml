@@ -4,7 +4,7 @@ operationsMappings:
     defaultMessage: "%{paramName} must be neither of %{a}"
   greaterThan(var):
     operationCall: pl.jlabs.beren.operations.Operations.greaterThan(this, var)
-    defaultMessage: "%{paramName} must be bigger than %{var}"
+    defaultMessage: "%{paramName} must be greater than %{var}"
   between(a,b):
     operationCall: pl.jlabs.beren.operations.Operations.between(this, a, b)
     defaultMessage: "%{paramName} must be between %{a} and %{b}"

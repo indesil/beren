@@ -21,6 +21,10 @@ public class CodeUtils {
     }
 
     public static String createMethodArgument(String value) {
+        if(value == null) {
+            return "";
+        }
+
         if(value.startsWith("(")) {
             return AS_LIST + value;
         }

@@ -122,6 +122,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
     private List<FieldValidationDefinition> createDefinitionFromType(RawFieldDefinition rawFieldDefinition, ParserContext parserContext) {
         return parserContext.getValidationParamFieldsGetters().stream()
                 .filter(getter -> processingFacade.isAssignable(getter.getReturnType(), rawFieldDefinition.getType()))
+                //.filter(getter -> getter.getReturnType().equals(rawFieldDefinition.getType()))
                 .map(getter -> createFieldDefinition(rawFieldDefinition, parserContext, getter))
                 .filter(Objects::nonNull)
                 .collect(toList());
@@ -251,7 +252,7 @@ public class MethodAnnotationSourceParser implements SourceParser {
     }
 
     private Map<String, String> createOperationParams(RawFieldDefinition rawFieldDefinition, Map<String, String> params, OperationConfig operationConfig) {
-        List<String> paramValues = OperationUtils.parseParams(rawFieldDefinition.getOperation());
+        List<String> paramValues = OperationUtils.parseParams(rawFieldDefinition.getOperation(), processingFacade);
         List<String> argsPlaceHolders = operationConfig.getArgs();
 
         if(paramValues.size() == (argsPlaceHolders.size() - 1)) {

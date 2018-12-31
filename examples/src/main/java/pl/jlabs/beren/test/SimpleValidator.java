@@ -7,7 +7,7 @@ import pl.jlabs.beren.test.model.customer.Gender;
 
 import java.util.Set;
 
-@Validator(breakingStrategy = BreakingStrategy.THROW_ON_FIRST)
+//@Validator(breakingStrategy = BreakingStrategy.THROW_ON_FIRST)
 public abstract class SimpleValidator {
 
     public SimpleValidator(int a, int b) {

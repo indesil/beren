@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static pl.jlabs.beren.compilator.parser.PlaceHolders.THIS_;
 import static pl.jlabs.beren.compilator.utils.OperationUtils.strapFromParams;
 
@@ -43,10 +44,21 @@ public class ConfigurationLoader {
         Map<String, OperationConfig> mappings = new HashMap<>(rawConfiguration.getOperationsMappings().size());
 
         for (Map.Entry<String, OperationConfig> rawConf : rawConfiguration.getOperationsMappings().entrySet()) {
+            validateConfig(rawConf);
             String key = strapFromParams(rawConf.getKey());
             tryPutNewConfiguration(mappings, key, formatOperationConfig(rawConf));
         }
         return new BerenConfig().withOperationsMappings(mappings);
+    }
+
+    private static void validateConfig(Map.Entry<String, OperationConfig> operationConfig) {
+        OperationConfig value = operationConfig.getValue();
+        if(value == null) {
+            throw new IllegalArgumentException(format("Empty operation config for entry %s!", operationConfig.getKey()));
+        }
+        if(isEmpty(value.getDefaultMessage()) && isEmpty(value.getOperationCall())) {
+            throw new IllegalArgumentException("New custom operation config must contains both operationCall and defaultMessage!");
+        }
     }
 
     private static void tryPutNewConfiguration(Map<String, OperationConfig> mappings, String key, OperationConfig operationConfig) {
@@ -95,15 +107,5 @@ public class ConfigurationLoader {
         berenConfig.getOperationsMappings().putAll(customConfig.getOperationsMappings());
 
         return berenConfig;
-    }
-
-    private static Map<String, OperationConfig> mergeOperationMappings(Map<String, OperationConfig> defaultConfig, Map<String, OperationConfig> customConfig) {
-        Map<String, OperationConfig> operationConfig = new HashMap<>(defaultConfig);
-
-        for (Map.Entry<String, OperationConfig> customEntry : customConfig.entrySet()) {
-            tryPutNewConfiguration(operationConfig, customEntry.getKey(), customEntry.getValue());
-        }
-
-        return operationConfig;
     }
 }

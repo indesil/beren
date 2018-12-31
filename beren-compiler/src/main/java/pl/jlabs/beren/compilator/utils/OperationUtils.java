@@ -10,15 +10,20 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.split;
 import static org.apache.commons.lang3.tuple.Pair.of;
 import static pl.jlabs.beren.compilator.parser.IterationType.NONE;
 import static pl.jlabs.beren.compilator.parser.IterationType.ofPrefix;
+import static pl.jlabs.beren.compilator.utils.ErrorMessages.INVALID_ITERATION_OPERATION;
 
 public class OperationUtils {
     private static final Pattern APOSTROPHE_PATTERN = Pattern.compile("'");
     private static final String SHARP = "#";
+    private static final String LEFT_BRACKET = "(";
+    private static final String RIGHT_BRACKET = ")";
 
     public static ClassName extractClassName(String operationCall) {
         int lastDot = operationCall.lastIndexOf('.');
@@ -36,10 +41,11 @@ public class OperationUtils {
     }
 
     private static Pair<IterationType, String> parseIterationOperation(String operation) {
-        int openingBracket = operation.indexOf("(");
-        if(openingBracket == -1 || !operation.endsWith(")") || operation.length() <= 3) {
+        int openingBracket = operation.indexOf(LEFT_BRACKET);
+        if(openingBracket == -1 || !operation.endsWith(RIGHT_BRACKET) || operation.length() <= 3) {
             return null;
         }
+
         String operationPrefix = operation.substring(0, openingBracket);
         IterationType iterationType = ofPrefix(operationPrefix);
         if(iterationType != null) {
@@ -50,7 +56,7 @@ public class OperationUtils {
     }
 
     public static String strapFromParams(String operation) {
-        int openingBracket = operation.indexOf("(");
+        int openingBracket = operation.indexOf(LEFT_BRACKET);
         if(openingBracket > -1) {
             return operation.substring(0, openingBracket);
         }
@@ -58,8 +64,13 @@ public class OperationUtils {
         return operation;
     }
 
-    public static List<String> parseParams(String entry) {
-        String escapedEntry = APOSTROPHE_PATTERN.matcher(extractParams(entry)).replaceAll("\"");
+    public static List<String> parseParams(String entry, ProcessingFacade processingFacade) {
+        String extractedParams = extractParams(entry);
+        if(extractedParams == null) {
+            processingFacade.error(INVALID_ITERATION_OPERATION, entry);
+            return emptyList();
+        }
+        String escapedEntry = APOSTROPHE_PATTERN.matcher(extractedParams).replaceAll("\"");
         Scanner scanner = new Scanner(escapedEntry);
         scanner.useDelimiter(",");
 
@@ -75,37 +86,46 @@ public class OperationUtils {
         return args;
     }
 
+    public static List<String> getParams(String entry) {
+        String paramsString = extractParams(entry);
+        if(paramsString == null) {
+            throw new IllegalArgumentException(format(INVALID_ITERATION_OPERATION,  entry));
+        }
+        return Stream.of(split(paramsString, ",")).map(String::trim).collect(toList());
+    }
+
+    public static String extractMethodName(String entry) {
+        int openingBracket = entry.indexOf(LEFT_BRACKET);
+        int lastDot = entry.lastIndexOf('.');
+        return entry.substring(lastDot + 1, openingBracket);
+    }
+
     private static String createListArgs(String value, Scanner scanner) {
         StringBuilder sb = new StringBuilder(value);
         while(scanner.hasNext() && !value.endsWith("]")) {
             value = scanner.next();
             sb.append(",").append(value);
         }
-        return sb.toString().replace("[","(").replace("]", ")");
-    }
-
-    public static List<String> getParams(String entry) {
-        String paramsString = extractParams(entry);
-        return Stream.of(split(paramsString, ",")).map(String::trim).collect(toList());
+        return sb.toString().replace("[",LEFT_BRACKET).replace("]", RIGHT_BRACKET);
     }
 
     private static String extractParams(String entry) {
-        int openingBracket = entry.indexOf("(");
-        int closingBracket = entry.lastIndexOf(")");
+        Pair<IterationType, String> operationEntry = parseOperation(entry);
+        if(operationEntry == null) {
+            return null;
+        }
+
+        String extractedEntry = operationEntry.getValue();
+        int openingBracket = extractedEntry.indexOf(LEFT_BRACKET);
+        int closingBracket = extractedEntry.lastIndexOf(RIGHT_BRACKET);
 
         if(openingBracket == -1 && closingBracket == -1) {
             return "";
         }
 
         if(openingBracket == -1 || closingBracket == -1 || openingBracket > closingBracket) {
-            throw new IllegalArgumentException("Invalid param entry " + entry);
+            return null;
         }
-        return entry.substring(openingBracket + 1, closingBracket);
-    }
-
-    public static String extractMethodName(String entry) {
-        int openingBracket = entry.indexOf("(");
-        int lastDot = entry.lastIndexOf('.');
-        return entry.substring(lastDot + 1, openingBracket);
+        return extractedEntry.substring(openingBracket + 1, closingBracket);
     }
 }

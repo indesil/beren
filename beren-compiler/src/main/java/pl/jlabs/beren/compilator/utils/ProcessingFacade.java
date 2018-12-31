@@ -26,6 +26,10 @@ public class ProcessingFacade {
         this.berenConfig = berenConfig;
     }
 
+    public boolean successFullConfigInit() {
+        return berenConfig != null;
+    }
+
     public void warning(String format, Object... params) {
         String warningMessage = format(format, params);
         processingEnv.getMessager().printMessage(MANDATORY_WARNING, warningMessage);
