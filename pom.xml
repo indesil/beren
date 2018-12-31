@@ -5,6 +5,33 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>Beren</name>
+    <description>Validation generator at compilation time!</description>
+    <url>https://github.com/jacek-kurlit/beren</url>
+
+    <scm>
+        <url>https://github.com/jacek-kurlit/beren/</url>
+        <connection>scm:git:git://github.com/jacek-kurlit/beren.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jacek-kurlit/beren.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>http://github.com/jacek-kurlit/beren/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Indesil</name>
+    </organization>
+
     <properties>
         <jdk.version>1.8</jdk.version>
         <junit.version>4.11</junit.version>
