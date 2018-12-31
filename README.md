@@ -2,7 +2,7 @@ Beren
 ========
 
 `Beren` is a Java bean validation generator able to generate validators classes at compilation time!
-   
+####Beren is still under development phase!      
 ## How does it works?
 You need to add two modules into your project. First `beren-compiler` 
 which is responsible for annotation processing and code generation.

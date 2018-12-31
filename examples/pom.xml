@@ -5,21 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>pl.indesil.beren</groupId>
+        <groupId>pl.indesil</groupId>
         <artifactId>beren-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>examples</artifactId>
 
+    <description>Contains Beren code examples</description>
+
     <dependencies>
         <dependency>
-            <groupId>pl.indesil.beren</groupId>
+            <groupId>pl.indesil</groupId>
             <artifactId>beren-compiler</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>pl.indesil.beren</groupId>
+            <groupId>pl.indesil</groupId>
             <artifactId>beren-core</artifactId>
             <version>${project.version}</version>
         </dependency>
