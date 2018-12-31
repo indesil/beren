@@ -1,8 +1,7 @@
 Beren
 ========
 
-`Beren` is a Java bean validation generator. Using annotation processor, 
-`Beren` is able to generate validators classes at compilation time!
+`Beren` is a Java bean validation generator able to generate validators classes at compilation time!
    
 ## How does it works?
 You need to add two modules into your project. First `beren-compiler` 
@@ -18,13 +17,13 @@ During this phase you need to clone repository to have it on your local maven re
 Add maven dependencies to your project
 ```xml
 <dependency>
-    <groupId>pl.jlabs.beren</groupId>
+    <groupId>pl.indesil.beren</groupId>
     <artifactId>beren-compiler</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <scope>compile</scope>
 </dependency>
 <dependency>
-    <groupId>pl.jlabs.beren</groupId>
+    <groupId>pl.indesil.beren</groupId>
     <artifactId>beren-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 </dependency>
@@ -32,8 +31,7 @@ Add maven dependencies to your project
 ## Usage
 Every example can be found in `examples` module
 
-Add `@Validator` to class which will be interface to be implemented by Beren.
-It must be either `abstract class or interface`. 
+Add `@Validator` to class which will be interface to be implemented by Beren. It must be either `abstract class or interface`. 
 ```java
 @Validator
 public abstract class FellowshipValidator {
@@ -51,15 +49,15 @@ Let's add some validation method.
  
 ```java
 @Validate(nullable = false, value = {
-            @Field(name = "heroes", operation = "notEmpty")
-    })
-    abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
+    @Field(name = "heroes", operation = "notEmpty")
+})
+abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
 ```
-Word about `@Validate` annotation values:
+`@Validate` annotation values:
 - `source` only available value for now is `METHOD_DEFINITION` which means validation is build based on Beren annotations. 
-- `nullable` processor will create null check for input value.
+- `nullable` processor will create null check for input value. 
 If nullable is set to false(default) violation will be created for 
-message `nullableMessage`. If set to true validation will be skipped withoput violation.
+message `nullableMessage`. If set to true validation will be skipped without violation.
 - `nullableMessage` violation template. Default value is 
 `%{input} must not be null!` where `%{input}` is name of method parameter
 - `value` validation definitions for chosen fields.
@@ -117,16 +115,16 @@ In `beren-compiler` module there is a file [beren-default-configuration.yaml](be
 containing default operation mappings.
 ```yaml
 between(a,b):
-    operationCall: pl.jlabs.beren.operations.Operations.between(this, a, b)
+    operationCall: Operations.between(this, a, b)
     defaultMessage: "%{paramName} must be between %{a} and %{b}"
 notEmpty:
-    operationCall: pl.jlabs.beren.operations.Operations.notEmpty(this)
+    operationCall: Operations.notEmpty(this)
     defaultMessage: "%{paramName} must not be empty!"
 ```       
 Important notice:
-- Operation class call may be any static method on class path that returns boolean.
+- Operation class call must be any static method on class path that returns boolean.
 For example if you are using apache commons `notEmpty` 
-may refer to `org.apache.commons.lang3.StringUtils.isNotEmpty(this)`
+entry may look like `org.apache.commons.lang3.StringUtils.isNotEmpty(this)`
 But in this case you wont be able to use `notEmpty` operation 
 for collections since `StringUtils` does not have `isNotEmpty(Collection)` method!   
 - Operation key must be unique by its name, therefore arguments overloading is not allowed.
@@ -141,9 +139,9 @@ It will be determined by java compiler during source compilation.
 Let's replace nullable message and notEmpty message to fit our project.
 ```java
 @Validate(nullable = false,
-        nullableMessage = "Fellowship was not assembled! Is it all already?",
-        value = {
-        @Field(name = "heroes", operation = "notEmpty", message = "The ring must be destroyed! So... anyone volunteer?")
+    nullableMessage = "Fellowship was not assembled! Is it all lost already?",
+    value = {
+    @Field(name = "heroes", operation = "notEmpty", message = "The ring must be destroyed! So... anyone volunteer?")
 })
 abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
 ``` 
@@ -153,13 +151,13 @@ Another way to change `notEmpty` default message is to create
 ```yaml
 operationsMappings:
   notEmpty:
-    operationCall: pl.jlabs.beren.operations.Operations.notEmpty(this)
+    operationCall: Operations.notEmpty(this)
     defaultMessage: "This %{paramName} should not be empty! Where is it!? Where are you my precious!?"
 ```     
 Both `operationCall` and `defaultMessage` must be given! Compilation output may looks like this
 ```java
 if(fellowshipOfTheRing == null) {
-  throw new ValidationException("Fellowship was not assembled! Is it lost already?");
+  throw new ValidationException("Fellowship was not assembled! Is it all lost already?");
 }
 // with configuration override
 if(!Operations.notEmpty(fellowshipOfTheRing.getHeroes())) {
@@ -175,44 +173,45 @@ if(!Operations.notEmpty(fellowshipOfTheRing.getHeroes())) {
 But what if you want to check each of heros in the company?
 There are two built in iteration command:
  - `#forEachKey(operation)` iterates over `Map.keySet()` and applies `operation` on each of value
- - `#forEachValue(operation)` iterates over `Map.values()` or 'Collection' and applies `operation` on each oof value
+ - `#forEachValue(operation)` iterates over `Map.values()` or `Collection` 
+ and applies `operation` on each of value
  - Neither of iteration operation will check for null values! 
  It's is only guarantee that wrapper will replace null with empty collection `CollectionUtils.collectionOrEmpty()`.
  Therefore if you want violation message for null collections you must add one by yourself!
- - `operation` may be `@Validate` method reference, our method that returns boolean and any of configured operations that fit.
+ - `operation` may be `@Validate` method reference, our method that returns 
+ boolean or any of configured operations that fit.
    
 Let's add validation for each hero.
 ```java
 @Validate(value = {
-        @Field(names = {"name", "homeland", "weapon"}, operation = "notNull", message = "Have you forgotten something like %{paramName}?"),
-        @Field(type = Integer.class, operation = "greaterThan(0)"),
-        @Field(name = "age", operation = "greaterThan(18)", message = "You must be adult to go for adventure!"),
-        @Field(name = "race", operation = "spiesCheck", message = "There is a Sauron spy in our team!"),
+    @Field(names = {"name", "homeland", "weapon"}, operation = "notNull", message = "Have you forgotten something like %{paramName}?"),
+    @Field(type = Integer.class, operation = "greaterThan(0)"),
+    @Field(name = "age", operation = "greaterThan(18)", message = "You must be adult to go for adventure!"),
+    @Field(name = "race", operation = "spiesCheck", message = "There is a Sauron spy in our team!"),
 })
 abstract void checkMember(Hero hero);
 ```
 Important notice:
-- `names` is array list of fields names that behave same as `name`
+- `names` is list of fields names that behave same as `name`
  but without need of defining `@Field` for each of them.
 - `type` Allows to apply `operation` for every field that is assignable to given Class.
 It means that for Integer.class every field of type int.class 
 and Integer.class will be validated with operation `greaterThan(0)`. Please make notice that 
-if you use Object.class every field will apply since everything can be assigned to Object type!
-- If two `@Field` definitions applies for one field multiple times 
-then multiple validations will be generated for that field! Take a look at generated code for
+if you use `Object.class` every field will apply since everything can be assigned to Object type!
+- If multiple `@Field` definitions applies for one field then multiple validations 
+will be generated for that field! Take a look at generated code for
 `type=Integer.class` and `name=age` which is also Integer.
-
 ```java
-if(!Operations.greaterThan(hero.getAge(),0)) {
+if(!Operations.greaterThan(hero.getAge(), 0)) {
   throw new ValidationException("age must be greater than 0");
 }
-if(!Operations.greaterThan(hero.getHeight(),0)) {
+if(!Operations.greaterThan(hero.getHeight(), 0)) {
   throw new ValidationException("height must be greater than 0");
 }
-if(!Operations.greaterThan(hero.getWeight(),0)) {
+if(!Operations.greaterThan(hero.getWeight(), 0)) {
   throw new ValidationException("weight must be greater than 0");
 }
-if(!Operations.greaterThan(hero.getAge(),18)) {
+if(!Operations.greaterThan(hero.getAge(), 18)) {
   throw new ValidationException("You must be adult to go for adventure!");
 }
 ```
@@ -229,15 +228,13 @@ Let's finish our validator by adding all of the rest validation definitions
 
 ```java
 @Validate(nullable = false,
-        nullableMessage = "Fellowship was not assembled! Is it all lost already?",
-        value = {
-        @Field(name = "heroes", operation = "notEmpty"),
-        @Field(name = "heroes", operation = "#forEachValue(checkMember)"),
-        @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Barlog', 'Gollum']))",
-                message = "Hey! Where did these things come from???"),
-        @Field(name = "heroesStuff", operation = "#forEachValue(isThisGoodStuff)",
-                message = "I think we need to check our supplies before leaving..."),
-        @Field(name = "elrondAdvices", operation = "whatDidElrondSaid")
+    nullableMessage = "Fellowship was not assembled! Is it all lost already?",
+    value = {
+    @Field(name = "heroes", operation = "notEmpty"),
+    @Field(name = "heroes", operation = "#forEachValue(checkMember)"),
+    @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Barlog', 'Gollum']))", message = "Hey! Where did these things come from???"),
+    @Field(name = "heroesStuff", operation = "#forEachValue(isThisGoodStuff)", message = "I think we need to check our supplies before leaving..."),
+    @Field(name = "elrondAdvices", operation = "whatDidElrondSaid")
 })
 abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
 
@@ -246,10 +243,10 @@ boolean isThisGoodStuff(Inventory inventory) {
 }
 
 @Validate(value = {
-        @Field(names = {"name", "homeland", "weapon"}, operation = "notNull", message = "Have you forgotten something like %{paramName}?"),
-        @Field(type = Integer.class, operation = "greaterThan(0)"),
-        @Field(name = "age", operation = "greaterThan(18)", message = "You must be adult to go for adventure!"),
-        @Field(name = "race", operation = "spiesCheck", message = "There is a Sauron spy in our team!"),
+    @Field(names = {"name", "homeland", "weapon"}, operation = "notNull", message = "Have you forgotten something like %{paramName}?"),
+    @Field(type = Integer.class, operation = "greaterThan(0)"),
+    @Field(name = "age", operation = "greaterThan(18)", message = "You must be adult to go for adventure!"),
+    @Field(name = "race", operation = "spiesCheck", message = "There is a Sauron spy in our team!"),
 })
 abstract void checkMember(Hero hero);
 
@@ -259,7 +256,7 @@ boolean thisMethodIsRacist(Race race) {
 }
 
 @Validate(value = {
-        @Field(type = Object.class, operation = "notNull")
+    @Field(pattern = "advice.*", operation = "notNull")
 })
 abstract void whatDidElrondSaid(VeryImportElrondAdvices advices);
 ```
@@ -276,9 +273,3 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE.md](LIC
 
 * Hat tip to [JavaPoet](https://github.com/square/javapoet)
 * Inspired by [Selma](http://www.selma-java.org/)
-
-
-
-   
-
-

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>pl.jlabs.beren</groupId>
+        <groupId>pl.indesil.beren</groupId>
         <version>0.0.1-SNAPSHOT</version>
         <artifactId>beren-parent</artifactId>
     </parent>
