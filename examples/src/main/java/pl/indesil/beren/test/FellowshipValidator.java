@@ -43,7 +43,7 @@ public abstract class FellowshipValidator {
     }
 
     @Validate(value = {
-            @Field(pattern = "advice.*", operation = "notNull")
+            @Field(pattern = "advice.*", operation = "notNull", message = "Wait! I forgot %{paramName}")
     })
     abstract void whatDidElrondSaid(VeryImportElrondAdvices advices);
 }
