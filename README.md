@@ -116,10 +116,10 @@ In `beren-compiler` module there is a file [beren-default-configuration.yaml](be
 containing default operation mappings.
 ```yaml
 between(a,b):
-    operationCall: Operations.between(this, a, b)
+    operationCall: pl.indesil.beren.operations.Operations.between(this, a, b)
     defaultMessage: "%{paramName} must be between %{a} and %{b}"
 notEmpty:
-    operationCall: Operations.notEmpty(this)
+    operationCall: pl.indesil.beren.operations.Operations.notEmpty(this)
     defaultMessage: "%{paramName} must not be empty!"
 ```       
 Important notice:
