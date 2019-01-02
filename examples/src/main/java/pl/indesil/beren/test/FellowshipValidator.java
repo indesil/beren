@@ -17,7 +17,7 @@ public abstract class FellowshipValidator {
             value = {
             @Field(name = "heroes", operation = "notEmpty"),
             @Field(name = "heroes", operation = "#forEachValue(checkMember)"),
-            @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Barlog', 'Gollum']))",
+            @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Balrog', 'Gollum']))",
                     message = "Hey! Where did these things come from???"),
             @Field(name = "heroesStuff", operation = "#forEachValue(isThisGoodStuff)",
                     message = "I think we need to check our supplies before leaving..."),
