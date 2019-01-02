@@ -18,13 +18,13 @@ During this phase you need to clone repository to have it on your local maven re
 Add maven dependencies to your project
 ```xml
 <dependency>
-    <groupId>pl.indesil.beren</groupId>
+    <groupId>pl.indesil</groupId>
     <artifactId>beren-compiler</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <scope>compile</scope>
 </dependency>
 <dependency>
-    <groupId>pl.indesil.beren</groupId>
+    <groupId>pl.indesil</groupId>
     <artifactId>beren-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 </dependency>
