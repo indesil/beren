@@ -1,4 +1,4 @@
 operationsMappings:
   notEmpty:
-    operationCall: pl.indesil.beren.operations.Operations.notEmpty(this)
+    operationCall: io.github.indesil.beren.operations.Operations.notEmpty(this)
     defaultMessage: "This %{paramName} should not be empty! Where is it!? Where are you my precious!?"

@@ -16,17 +16,19 @@ During this phase you need to clone repository to have it on your local maven re
 
 Add maven dependencies to your project
 ```xml
-<dependency>
-    <groupId>pl.indesil.beren</groupId>
-    <artifactId>beren-compiler</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <scope>compile</scope>
-</dependency>
-<dependency>
-    <groupId>pl.indesil.beren</groupId>
-    <artifactId>beren-core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>io.github.indesil</groupId>
+        <artifactId>beren-compiler</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.github.indesil</groupId>
+        <artifactId>beren-core</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+</dependencies>
 ```
 ## Usage
 Every example can be found in `examples` module
@@ -271,5 +273,6 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE.md](LIC
 
 ## Acknowledgments
 
+* Special thanks to [JetBrains](https://www.jetbrains.com/?from=BEREN) for giving us open source Intellij license! ![Jetbrains logo](logo/jetbrains/jetbrains.jpg?raw=true "Jetbrains logo") 
 * Hat tip to [JavaPoet](https://github.com/square/javapoet)
 * Inspired by [Selma](http://www.selma-java.org/)

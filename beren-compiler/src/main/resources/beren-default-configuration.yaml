@@ -1,16 +1,16 @@
 operationsMappings:
   neitherOf(a):
-    operationCall: pl.indesil.beren.operations.Operations.neitherOf(this, a)
+    operationCall: io.github.indesil.beren.operations.Operations.neitherOf(this, a)
     defaultMessage: "%{paramName} must be neither of %{a}"
   greaterThan(var):
-    operationCall: pl.indesil.beren.operations.Operations.greaterThan(this, var)
+    operationCall: io.github.indesil.beren.operations.Operations.greaterThan(this, var)
     defaultMessage: "%{paramName} must be greater than %{var}"
   between(a,b):
-    operationCall: pl.indesil.beren.operations.Operations.between(this, a, b)
+    operationCall: io.github.indesil.beren.operations.Operations.between(this, a, b)
     defaultMessage: "%{paramName} must be between %{a} and %{b}"
   notNull:
     operationCall: java.util.Objects.nonNull(this)
     defaultMessage: "%{paramName} must not be null!"
   notEmpty:
-    operationCall: pl.indesil.beren.operations.Operations.notEmpty(this)
+    operationCall: io.github.indesil.beren.operations.Operations.notEmpty(this)
     defaultMessage: "%{paramName} must not be empty!"
