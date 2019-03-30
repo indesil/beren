@@ -2,7 +2,8 @@ Beren
 ========
 
 `Beren` is a Java bean validation generator able to generate validators classes at compilation time!
-####Beren is still under development phase!      
+Beren is still under development phase!      
+
 ## How does it works?
 You need to add two modules into your project. First `beren-compiler` 
 which is responsible for annotation processing and code generation.
@@ -117,10 +118,10 @@ In `beren-compiler` module there is a file [beren-default-configuration.yaml](be
 containing default operation mappings.
 ```yaml
 between(a,b):
-    operationCall: Operations.between(this, a, b)
+    operationCall: io.github.indesil.beren.operations.Operations.between(this, a, b)
     defaultMessage: "%{paramName} must be between %{a} and %{b}"
 notEmpty:
-    operationCall: Operations.notEmpty(this)
+    operationCall: io.github.indesil.beren.operations.Operations.notEmpty(this)
     defaultMessage: "%{paramName} must not be empty!"
 ```       
 Important notice:
@@ -234,7 +235,7 @@ Let's finish our validator by adding all of the rest validation definitions
     value = {
     @Field(name = "heroes", operation = "notEmpty"),
     @Field(name = "heroes", operation = "#forEachValue(checkMember)"),
-    @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Barlog', 'Gollum']))", message = "Hey! Where did these things come from???"),
+    @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Balrog', 'Gollum']))", message = "Hey! Where did these things come from???"),
     @Field(name = "heroesStuff", operation = "#forEachValue(isThisGoodStuff)", message = "I think we need to check our supplies before leaving..."),
     @Field(name = "elrondAdvices", operation = "whatDidElrondSaid")
 })
@@ -269,7 +270,7 @@ abstract void whatDidElrondSaid(VeryImportElrondAdvices advices);
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
