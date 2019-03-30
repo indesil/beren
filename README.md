@@ -276,4 +276,5 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
  
 * Hat tip to [JavaPoet](https://github.com/square/javapoet)
 * Inspired by [Selma](http://www.selma-java.org/)
-* Special thanks to [JetBrains](https://www.jetbrains.com/?from=BEREN) for giving us open source Intellij license! ![Jetbrains logo](logo/jetbrains/jetbrains.png "Jetbrains logo")
+* Special thanks to [JetBrains](https://www.jetbrains.com/?from=BEREN) for giving us open source Intellij license! 
+![Jetbrains logo](logo/jetbrains/jetbrains.png "Jetbrains logo")
