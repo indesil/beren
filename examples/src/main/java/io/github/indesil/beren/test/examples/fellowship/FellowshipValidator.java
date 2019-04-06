@@ -1,13 +1,13 @@
-package io.github.indesil.beren.test;
+package io.github.indesil.beren.test.examples.fellowship;
 
 import io.github.indesil.beren.annotations.Field;
 import io.github.indesil.beren.annotations.Id;
 import io.github.indesil.beren.annotations.Validate;
 import io.github.indesil.beren.annotations.Validator;
-import io.github.indesil.beren.test.model.fellowship.*;
+import io.github.indesil.beren.test.examples.fellowship.model.*;
 
-import static io.github.indesil.beren.test.model.fellowship.Race.GOBLIN;
-import static io.github.indesil.beren.test.model.fellowship.Race.ORC;
+import static io.github.indesil.beren.test.examples.fellowship.model.Race.GOBLIN;
+import static io.github.indesil.beren.test.examples.fellowship.model.Race.ORC;
 
 @Validator
 public abstract class FellowshipValidator {
@@ -15,7 +15,7 @@ public abstract class FellowshipValidator {
     @Validate(nullable = false,
             nullableMessage = "Fellowship was not assembled! Is it all lost already?",
             value = {
-            @Field(name = "heroes", operation = "notEmpty"),
+            @Field(name = "heroes", operation = "notEmptyCollection"),
             @Field(name = "heroes", operation = "#forEachValue(checkMember)"),
             @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Balrog', 'Gollum']))",
                     message = "Hey! Where did these things come from???"),
@@ -38,7 +38,7 @@ public abstract class FellowshipValidator {
     abstract void checkMember(Hero hero);
 
     @Id("spiesCheck")
-    boolean thisMethodIsRacist(Race race) {
+    boolean checkSpies(Race race) {
         return !GOBLIN.equals(race) && !ORC.equals(race);
     }
 

@@ -17,7 +17,7 @@ import static org.apache.commons.lang3.StringUtils.split;
 import static org.apache.commons.lang3.tuple.Pair.of;
 
 public class OperationUtils {
-    private static final Pattern APOSTROPHE_PATTERN = Pattern.compile("'");
+    private static final Pattern APOSTROPHE_PATTERN = Pattern.compile("((?<!\\\\)['])");
     private static final String SHARP = "#";
     private static final String LEFT_BRACKET = "(";
     private static final String RIGHT_BRACKET = ")";
@@ -67,7 +67,9 @@ public class OperationUtils {
             processingFacade.error(ErrorMessages.INVALID_ITERATION_OPERATION, entry);
             return emptyList();
         }
-        String escapedEntry = APOSTROPHE_PATTERN.matcher(extractedParams).replaceAll("\"");
+        String escapedEntry = APOSTROPHE_PATTERN.matcher(extractedParams)
+                .replaceAll("\"")
+                .replaceAll("\\\\'", "'");
         Scanner scanner = new Scanner(escapedEntry);
         scanner.useDelimiter(",");
 

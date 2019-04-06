@@ -52,7 +52,7 @@ Let's add some validation method.
  
 ```java
 @Validate(nullable = false, value = {
-    @Field(name = "heroes", operation = "notEmpty")
+    @Field(name = "heroes", operation = "notEmptyCollection")
 })
 abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
 ```
@@ -89,25 +89,25 @@ public class FellowshipValidatorImplBeren_ extends FellowshipValidator {
         if (fellowshipOfTheRing == null) {
             throw new ValidationException("fellowshipOfTheRing must not be null!");
         }
-        if (!Operations.notEmpty(fellowshipOfTheRing.getHeroes())) {
-            throw new ValidationException("heroes must not be empty!");
+        if (!CollectionUtils.isNotEmpty(fellowshipOfTheRing.getHeroes())) {
+            throw new ValidationException("Collection heroes must not be empty!");
         }
     }
 }
 ```
 As we can see messages are quite of of our project scope. 
 Let's change them, but first a few words about `@Field` annotation used in example
-`name = "heroes", operation = "notEmpty"`
+`name = "heroes", operation = "notEmptyCollection"`
 
 For now there is only single field we want to validate and it's defined by its name.
 Beren will try to find this field by getter in this case `getHeroes()`.
-For this field we want to perform `notEmpty` operation. 
+For this field we want to perform `notEmptyCollection` operation. 
 For your convenience every operation you use must check if field is valid, beren will negate value for you.
 And therefore in generated code 
 ```java
-if (!Operations.notEmpty(fellowshipOfTheRing.getHeroes()))
+if (!CollectionUtils.isNotEmpty(fellowshipOfTheRing.getHeroes()))
 ```   
-You may now ask - Hey! Where did that `Operations.notEmpty()` came from!?
+You may now ask - Hey! Where did that `!CollectionUtils.isNotEmpty()` came from!?
 There are three sources of validation method:
 - Method annotated with `@Validate`
 - Method already implemented in validator class
@@ -120,23 +120,21 @@ containing default operation mappings.
 between(a,b):
     operationCall: io.github.indesil.beren.operations.Operations.between(this, a, b)
     defaultMessage: "%{paramName} must be between %{a} and %{b}"
-notEmpty:
-    operationCall: io.github.indesil.beren.operations.Operations.notEmpty(this)
-    defaultMessage: "%{paramName} must not be empty!"
+notEmptyCollection:
+    operationCall: org.apache.commons.collections4.CollectionUtils.isNotEmpty(this)
+    defaultMessage: "Collection %{paramName} must not be empty!"
 ```       
 Important notice:
 - Operation class call must be any static method on class path that returns boolean.
-For example if you are using apache commons `notEmpty` 
-entry may look like `org.apache.commons.lang3.StringUtils.isNotEmpty(this)`
-But in this case you wont be able to use `notEmpty` operation 
-for collections since `StringUtils` does not have `isNotEmpty(Collection)` method!   
+For example if may use your own implementation of `notEmptyCollection` 
+entry may look like `my.package.MyUtils.isNotEmpty(this)`   
 - Operation key must be unique by its name, therefore arguments overloading is not allowed.
 - Operation arguments can be used as place holders in message as shown above.
 - `this` argument indicate object that is being validated for example `fellowshipOfTheRing.getHeroes()`. 
 Definition must contains `this` otherwise it's pointless.
 - Single operation key may refer to multiple overloaded methods 
-but there is no type validation. For example `Operations.notEmpty(this)` might be pointing at
-`Operations.notEmpty(String)` and `Operations.notEmpty(Collection)`.
+but there is no type validation. For example `Operations.lessThan(this, a)` might be pointing at
+`Operations.lessThan(Number, int)` and `Operations.lessThan(Number, double)`.
 It will be determined by java compiler during source compilation.
 
 Let's replace nullable message and notEmpty message to fit our project.
@@ -144,18 +142,18 @@ Let's replace nullable message and notEmpty message to fit our project.
 @Validate(nullable = false,
     nullableMessage = "Fellowship was not assembled! Is it all lost already?",
     value = {
-    @Field(name = "heroes", operation = "notEmpty", message = "The ring must be destroyed! So... anyone volunteer?")
+    @Field(name = "heroes", operation = "notEmptyCollection", message = "The ring must be destroyed! So... anyone volunteer?")
 })
 abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
 ``` 
 `@Field(message)` always overrides default message configured for operation. 
-Another way to change `notEmpty` default message is to create
+Another way to change `notEmptyCollection` default message is to create
 `beren-configuration.yaml` in `resources` folder and then add entry   
 ```yaml
 operationsMappings:
-  notEmpty:
-    operationCall: Operations.notEmpty(this)
-    defaultMessage: "This %{paramName} should not be empty! Where is it!? Where are you my precious!?"
+  notEmptyCollection:
+    operationCall: org.apache.commons.collections4.CollectionUtils.isNotEmpty(this)
+    defaultMessage: "My own default message for empty collection error - %{paramName} must not be empty!"
 ```     
 Both `operationCall` and `defaultMessage` must be given! Compilation output may looks like this
 ```java
@@ -164,22 +162,22 @@ if(fellowshipOfTheRing == null) {
 }
 // with configuration override
 if(!Operations.notEmpty(fellowshipOfTheRing.getHeroes())) {
-  throw new ValidationException("This heroes should not be empty! Where is it!? Where are you my precious!?");
+  throw new ValidationException("My own default message for empty collection error - `heroes` must not be empty!");
 }
 ``` 
 or with message override
-``` java
+```java
 if(!Operations.notEmpty(fellowshipOfTheRing.getHeroes())) {
   throw new ValidationException("The ring must be destroyed! So... anyone volunteer?");
 }
 ```
-But what if you want to check each of heros in the company?
+But what if you want to check each of heroes in the company?
 There are two built in iteration command:
  - `#forEachKey(operation)` iterates over `Map.keySet()` and applies `operation` on each of value
  - `#forEachValue(operation)` iterates over `Map.values()` or `Collection` 
  and applies `operation` on each of value
  - Neither of iteration operation will check for null values! 
- It's is only guarantee that wrapper will replace null with empty collection `CollectionUtils.collectionOrEmpty()`.
+ It's is only guarantee that wrapper will replace null with empty collection `beren.CollectionUtils.collectionOrEmpty()`.
  Therefore if you want violation message for null collections you must add one by yourself!
  - `operation` may be `@Validate` method reference, our method that returns 
  boolean or any of configured operations that fit.
@@ -221,7 +219,7 @@ if(!Operations.greaterThan(hero.getAge(), 18)) {
  In current version Beren cannot support Enums directly. You will need to add you validation method for them 
  ```java
 @Id("spiesCheck")
-boolean thisMethodIsRacist(Race race) {
+boolean checkSpies(Race race) {
     return !GOBLIN.equals(race) && !ORC.equals(race);
 }
 ```
@@ -233,7 +231,7 @@ Let's finish our validator by adding all of the rest validation definitions
 @Validate(nullable = false,
     nullableMessage = "Fellowship was not assembled! Is it all lost already?",
     value = {
-    @Field(name = "heroes", operation = "notEmpty"),
+    @Field(name = "heroes", operation = "notEmptyCollection"),
     @Field(name = "heroes", operation = "#forEachValue(checkMember)"),
     @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Balrog', 'Gollum']))", message = "Hey! Where did these things come from???"),
     @Field(name = "heroesStuff", operation = "#forEachValue(isThisGoodStuff)", message = "I think we need to check our supplies before leaving..."),
@@ -254,7 +252,7 @@ boolean isThisGoodStuff(Inventory inventory) {
 abstract void checkMember(Hero hero);
 
 @Id("spiesCheck")
-boolean thisMethodIsRacist(Race race) {
+boolean checkSpies(Race race) {
     return !GOBLIN.equals(race) && !ORC.equals(race);
 }
 

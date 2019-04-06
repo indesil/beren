@@ -1,4 +1,4 @@
-package io.github.indesil.beren.test.model.fellowship;
+package io.github.indesil.beren.test.examples.fellowship.model;
 
 public class Inventory {
     private String name;

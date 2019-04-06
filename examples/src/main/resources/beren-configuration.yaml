@@ -1,4 +1,4 @@
 operationsMappings:
-  notEmpty:
-    operationCall: io.github.indesil.beren.operations.Operations.notEmpty(this)
-    defaultMessage: "This %{paramName} should not be empty! Where is it!? Where are you my precious!?"
+  notEmptyCollection:
+    operationCall: org.apache.commons.collections4.CollectionUtils.isNotEmpty(this)
+    defaultMessage: "My own default message for empty collection error - %{paramName} must not be empty!"
