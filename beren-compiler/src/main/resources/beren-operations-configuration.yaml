@@ -1,0 +1,108 @@
+operationsMappings:
+  ### NUMBERS ###
+  min(value):
+    operationCall: io.github.indesil.beren.operations.NumberOperations.min(this, value)
+    defaultMessage: "{javax.validation.constraints.Min.message}"
+  max(value):
+    operationCall: io.github.indesil.beren.operations.NumberOperations.max(this, value)
+    defaultMessage: "{javax.validation.constraints.Max.message}"
+  negative:
+    operationCall: io.github.indesil.beren.operations.NumberOperations.negative(this)
+    defaultMessage: "{javax.validation.constraints.Negative.message}"
+  negativeOrZero:
+    operationCall: io.github.indesil.beren.operations.NumberOperations.negativeOrZero(this)
+    defaultMessage: "{javax.validation.constraints.NegativeOrZero.message}"
+  positive:
+    operationCall: io.github.indesil.beren.operations.NumberOperations.positive(this)
+    defaultMessage: "{javax.validation.constraints.Positive.message}"
+  positiveOrZero:
+    operationCall: io.github.indesil.beren.operations.NumberOperations.positiveOrZero(this)
+    defaultMessage: "{javax.validation.constraints.PositiveOrZero.message}"
+  between(min, max):
+    operationCall: io.github.indesil.beren.operations.NumberOperations.between(this, min, max)
+    defaultMessage: "{io.github.beren.validator.constraints.Between.message}"
+
+   ##to be removed
+  greaterThan(var):
+    operationCall: io.github.indesil.beren.operations.Operations.greaterThan(this, var)
+    defaultMessage: "%{paramName} must be greater than %{var}"
+  greaterThanOrEquals(var):
+    operationCall: io.github.indesil.beren.operations.Operations.greaterThanOrEquals(this, var)
+    defaultMessage: "%{paramName} must be greater or equal to %{var}"
+  lessThan(var):
+    operationCall: io.github.indesil.beren.operations.Operations.lessThan(this, var)
+    defaultMessage: "%{paramName} must be less than %{var}"
+  lessThanOrEquals(var):
+    operationCall: io.github.indesil.beren.operations.Operations.lessThanOrEquals(this, var)
+    defaultMessage: "%{paramName} must be less or equal to %{var}"
+
+  ### OBJECTS ###
+  "null":
+    operationCall: java.util.Objects.isNull(this)
+    defaultMessage: "{javax.validation.constraints.Null.message}"
+  notNull:
+    operationCall: java.util.Objects.nonNull(this)
+    defaultMessage: "{javax.validation.constraints.NotNull.message}"
+  oneOf(array):
+    operationCall: io.github.indesil.beren.operations.SequenceOperations.oneOf(this, array)
+    defaultMessage: "{io.github.beren.validator.constraints.OneOf.message}"
+  neitherOf(array):
+    operationCall: io.github.indesil.beren.operations.SequenceOperations.neitherOf(this, array)
+    defaultMessage: "{io.github.beren.validator.constraints.NeitherOf.message}"
+  ## to remove
+  isNull:
+    operationCall: java.util.Objects.isNull(this)
+    defaultMessage: "{javax.validation.constraints.NotNull.message}"
+  equals(var):
+    operationCall: java.util.Objects.equals(this, var)
+    defaultMessage: "%{paramName} must be equal to %{var}"
+  notEquals(var):
+    operationCall: io.github.indesil.beren.operations.Operations.notEquals(this, var)
+    defaultMessage: "%{paramName} must be not equal to %{var}"
+
+  ### COLLECTIONS ###
+  ### to be removed ###
+  emptyCollection:
+    operationCall: org.apache.commons.collections4.CollectionUtils.isEmpty(this)
+    defaultMessage: "Collection %{paramName} must be empty!"
+  notEmptyCollection:
+    operationCall: org.apache.commons.collections4.CollectionUtils.isNotEmpty(this)
+    defaultMessage: "Collection %{paramName} must not be empty!"
+
+  ### BOOLEANS ###
+  assertTrue:
+    operationCall: org.apache.commons.lang3.BooleanUtils.isNotFalse(this)
+    defaultMessage: "{javax.validation.constraints.AssertTrue.message}"
+  assertFalse:
+    operationCall: org.apache.commons.lang3.BooleanUtils.isNotTrue(this)
+    defaultMessage: "{javax.validation.constraints.AssertFalse.message}"
+
+  ### GENERAL ###
+  notEmpty:
+    operationCall: io.github.indesil.beren.operations.SequenceOperations.isNotEmpty(this)
+    defaultMessage: "{javax.validation.constraints.NotEmpty.message}"
+  size(min, max):
+    operationCall: io.github.indesil.beren.operations.SequenceOperations.size(this, min, max)
+    defaultMessage: "{javax.validation.constraints.Size.message}"
+
+  ### STRINGS ###
+  notBlank:
+    operationCall: org.apache.commons.lang3.StringUtils.isNotBlank(this)
+    defaultMessage: "{javax.validation.constraints.NotBlank.message}"
+  startsWith(prefix):
+    operationCall: org.apache.commons.lang3.StringUtils.startsWith(this, prefix)
+    defaultMessage: "{io.github.beren.validator.constraints.StartsWith.message}"
+  endsWith(suffix):
+    operationCall: org.apache.commons.lang3.StringUtils.endsWith(this, suffix)
+    defaultMessage: "{io.github.beren.validator.constraints.EndsWith.message}"
+  contains(substr):
+    operationCall: org.apache.commons.lang3.StringUtils.contains(this, substr)
+    defaultMessage: "{io.github.beren.validator.constraints.Contains.message}"
+
+  ### to be removed ###
+  emptyString:
+    operationCall: org.apache.commons.lang3.StringUtils.isEmpty(this)
+    defaultMessage: "%{paramName} must be empty!"
+  notEmptyString:
+    operationCall: org.apache.commons.lang3.StringUtils.isNotEmpty(this)
+    defaultMessage: "%{paramName} must not be empty!"

@@ -4,7 +4,6 @@ import java.util.List;
 
 public class OperationConfig {
     private String operationCall;
-    //must have!
     private String defaultMessage;
     private List<String> args;
 

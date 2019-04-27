@@ -2,6 +2,7 @@ package io.github.indesil.beren.operations;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class Operations {
 
@@ -59,14 +60,6 @@ public class Operations {
 
     public static boolean lessThanOrEquals(Number number, double a) {
         return number != null && number.intValue() <= a;
-    }
-
-    public static boolean between(Number number, int a, int b) {
-        return number != null && number.intValue() >= a && number.intValue() <= b;
-    }
-
-    public static boolean between(Number number, double a, double b) {
-        return number != null && number.doubleValue() >= a && number.doubleValue() <= b;
     }
 
     public static boolean notEquals(Object input, Object value) {

@@ -15,12 +15,17 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static io.github.indesil.beren.compilator.utils.OperationUtils.strapFromParams;
 
 public class ConfigurationLoader {
-    private static final String DEFAULT_CONFIG = "beren-default-configuration.yaml";
+    private static final String OPERATIONS_CONFIG = "beren-operations-configuration.yaml";
     private static final String CUSTOM_CONFIG = "beren-configuration.yaml";
+
+    public static void main(String[] args) {
+        BerenConfig berenConfig = loadConfigurations();
+        System.out.println("");
+    }
 
     public static BerenConfig loadConfigurations() {
         Yaml yaml = new Yaml();
-        BerenConfig defaultConfig = loadConfig(yaml, DEFAULT_CONFIG);
+        BerenConfig defaultConfig = loadConfig(yaml, OPERATIONS_CONFIG);
         BerenConfig customConfig = loadConfig(yaml, CUSTOM_CONFIG);
 
         return mergeConfigs(defaultConfig, customConfig);

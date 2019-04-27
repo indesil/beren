@@ -38,8 +38,8 @@ public interface FeaturesValidator {
     }
 
     @Validate(value = {
-            @Field(name = "booleanField1", operation = "isTrue"),
-            @Field(name = "booleanField2", operation = "isFalse")
+            @Field(name = "booleanField1", operation = "assertTrue"),
+            @Field(name = "booleanField2", operation = "assertFalse")
     })
     void validateMapValueObject(MapValueObject mapValueObject);
 
@@ -50,6 +50,6 @@ public interface FeaturesValidator {
 
     @Validate(
             nullable = true,
-            value = @Field(pattern = "stringField.*", operation = "stringContains('X\\'YZ')"))
+            value = @Field(pattern = "stringField.*", operation = "contains('X\\'YZ')"))
     void validateObjectWithManyStrings(ObjectWithManyStrings input);
 }
