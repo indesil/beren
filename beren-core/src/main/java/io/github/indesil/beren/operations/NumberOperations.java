@@ -3,7 +3,6 @@ package io.github.indesil.beren.operations;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-// To slightly increase performance create more function overloads for primitive types and Wrapper (since they can be nulls!)
 public class NumberOperations {
     public static boolean min(BigInteger number, long value) {
         return number == null || number.compareTo(BigInteger.valueOf(value)) >= 0;
@@ -35,6 +34,92 @@ public class NumberOperations {
 
     public static boolean max(Number number, double value) {
         return number == null || number.doubleValue() <= value;
+    }
+
+    public static boolean decimalMin(BigInteger number, String decimal, boolean inclusive) {
+        try {
+            return decimalMin(number, new BigDecimal(decimal), inclusive);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean decimalMin(BigInteger number, BigDecimal decimal, boolean inclusive) {
+        BigDecimal bigDecimalNumber = number != null ? new BigDecimal(number) : null;
+        return decimalMin(bigDecimalNumber, decimal, inclusive);
+    }
+
+    public static boolean decimalMin(BigDecimal number, String decimal, boolean inclusive) {
+        try {
+            return decimalMin(number, new BigDecimal(decimal), inclusive);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean decimalMin(Number number, String decimal, boolean inclusive) {
+        BigDecimal bigDecimalNumber = number != null ? new BigDecimal(number.toString()) : null;
+        return decimalMin(bigDecimalNumber, decimal, inclusive);
+    }
+
+    public static boolean decimalMin(CharSequence number, String decimal, boolean inclusive) {
+        try {
+            BigDecimal bigDecimalNumber = number != null ? new BigDecimal(number.toString()) : null;
+            return decimalMin(bigDecimalNumber, new BigDecimal(decimal), inclusive);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean decimalMin(BigDecimal valueToValidate, BigDecimal expectedMax, boolean inclusive) {
+        if (valueToValidate == null) {
+            return true;
+        }
+        int compareValue = valueToValidate.compareTo(expectedMax);
+        return inclusive ? compareValue >= 0 : compareValue > 0;
+    }
+
+    public static boolean decimalMax(BigInteger number, String decimal, boolean inclusive) {
+        try {
+            return decimalMax(number, new BigDecimal(decimal), inclusive);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean decimalMax(BigInteger number, BigDecimal decimal, boolean inclusive) {
+        BigDecimal bigDecimalNumber = number != null ? new BigDecimal(number) : null;
+        return decimalMax(bigDecimalNumber, decimal, inclusive);
+    }
+
+    public static boolean decimalMax(BigDecimal number, String decimal, boolean inclusive) {
+        try {
+            return decimalMax(number, new BigDecimal(decimal), inclusive);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean decimalMax(Number number, String decimal, boolean inclusive) {
+        BigDecimal bigDecimalNumber = number != null ? new BigDecimal(number.toString()) : null;
+        return decimalMax(bigDecimalNumber, decimal, inclusive);
+    }
+
+    public static boolean decimalMax(CharSequence number, String decimal, boolean inclusive) {
+        try {
+            BigDecimal bigDecimalNumber = number != null ? new BigDecimal(number.toString()) : null;
+            return decimalMax(bigDecimalNumber, new BigDecimal(decimal), inclusive);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean decimalMax(BigDecimal valueToValidate, BigDecimal expectedMax, boolean inclusive) {
+        if (valueToValidate == null) {
+            return true;
+        }
+        int compareValue = valueToValidate.compareTo(expectedMax);
+        return inclusive ? compareValue <= 0 : compareValue < 0;
     }
 
     public static boolean negative(Number number) {
@@ -101,5 +186,32 @@ public class NumberOperations {
 
     public static boolean between(Number number, double min, double max) {
         return number == null || (number.doubleValue() >= min && number.doubleValue() <= max);
+    }
+
+    public static boolean digits(CharSequence valueToValidate, int maxIntegerLength, int maxFractionLength) {
+        return valueToValidate == null || digits(valueToValidate.toString(), maxIntegerLength, maxFractionLength);
+    }
+
+    public static boolean digits(Number valueToValidate, int maxIntegerLength, int maxFractionLength) {
+        return valueToValidate == null || digits(valueToValidate.toString(), maxIntegerLength, maxFractionLength);
+    }
+
+    public static boolean digits(String valueToValidate, int maxIntegerLength, int maxFractionLength) {
+        try {
+            return valueToValidate == null || digits(new BigDecimal(valueToValidate), maxIntegerLength, maxFractionLength);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean digits(BigDecimal valueToValidate, int maxIntegerLength, int maxFractionLength) {
+        if (valueToValidate == null) {
+            return true;
+        }
+
+        int integerPartLength = valueToValidate.precision() - valueToValidate.scale();
+        int fractionPartLength = valueToValidate.scale() < 0 ? 0 : valueToValidate.scale();
+
+        return (maxIntegerLength >= integerPartLength && maxFractionLength >= fractionPartLength);
     }
 }

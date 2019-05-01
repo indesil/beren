@@ -6,6 +6,15 @@ operationsMappings:
   max(value):
     operationCall: io.github.indesil.beren.operations.NumberOperations.max(this, value)
     defaultMessage: "{javax.validation.constraints.Max.message}"
+  decimalMin(value, inclusive):
+    operationCall: io.github.indesil.beren.operations.NumberOperations.decimalMin(this, value, inclusive)
+    defaultMessage: "{javax.validation.constraints.DecimalMin.message}"
+  decimalMax(value, inclusive):
+    operationCall: io.github.indesil.beren.operations.NumberOperations.decimalMax(this, value, inclusive)
+    defaultMessage: "{javax.validation.constraints.DecimalMax.message}"
+  digits(integer, fraction):
+    operationCall: io.github.indesil.beren.operations.NumberOperations.digits(this, integer, fraction)
+    defaultMessage: "{javax.validation.constraints.Digits.message}"
   negative:
     operationCall: io.github.indesil.beren.operations.NumberOperations.negative(this)
     defaultMessage: "{javax.validation.constraints.Negative.message}"
@@ -98,6 +107,26 @@ operationsMappings:
   contains(substr):
     operationCall: org.apache.commons.lang3.StringUtils.contains(this, substr)
     defaultMessage: "{io.github.beren.validator.constraints.Contains.message}"
+  email(additionalPattern, flags):
+    operationCall: io.github.indesil.beren.operations.Operations.email(this, additionalPattern, flags)
+    defaultMessage: "{javax.validation.constraints.Email.message}"
+  pattern(pattern, flags):
+    operationCall: io.github.indesil.beren.operations.Operations.pattern(this, pattern, flags)
+    defaultMessage: "{javax.validation.constraints.Pattern.message}"
+
+  ### DATES ###
+  future:
+    operationCall:  io.github.indesil.beren.operations.DateOperations.future(this)
+    defaultMessage: "{javax.validation.constraints.Future.message}"
+  futureOrPresent:
+    operationCall:  io.github.indesil.beren.operations.futureOrPresent.future(this)
+    defaultMessage: "{javax.validation.constraints.FutureOrPresent.message}"
+  past:
+    operationCall:  io.github.indesil.beren.operations.DateOperations.past(this)
+    defaultMessage: "{javax.validation.constraints.Past.message}"
+  pastOrPresent:
+    operationCall:  io.github.indesil.beren.operations.futureOrPresent.pastOrPresent(this)
+    defaultMessage: "{javax.validation.constraints.PastOrPresent.message}"
 
   ### to be removed ###
   emptyString:
