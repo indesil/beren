@@ -11,7 +11,7 @@ public interface FeaturesValidator {
     @Validate(
             nullable = true,
             value = {
-                    @Field(name = "collectionField", operation = "notEmptyCollection"),
+                    @Field(name = "collectionField", operation = "notEmpty"),
                     @Field(name = "collectionField", operation = "#forEachValue(collectionCheck)"),
                     @Field(name = "complexObjectField", operation = "checkComplexObject"),
                     @Field(name = "objectWithManyNumbersField", operation = "validateObjectsWithManyNumbers"),
@@ -23,12 +23,12 @@ public interface FeaturesValidator {
 
     @Id("collectionCheck")
     @Validate(value = {
-            @Field(name = "stringField1", operation = "notEmptyString"),
+            @Field(name = "stringField1", operation = "notEmpty", message = "%{paramName} must not be empty!"),
             @Field(name = "stringField2", operation = "neitherOf(['abc,', 'de,f', ',ghi'])"),
             @Field(name = "integerField1", operation = "between(0,5)"),
             @Field(name = "integerField2", operation = "oneOf([5,10,15])"),
             @Field(name = "enumObjectField", operation = "isEnumObjectCorrect", message = "Invalid enum object!"),
-            @Field(name = "mapField", operation = "#forEachKey(lessThan(-5))", message = "Each map key must be less than -5"),
+            @Field(name = "mapField", operation = "#forEachKey(max(-5))", message = "Each map key must be less than -5"),
             @Field(name = "mapField", operation = "#forEachValue(validateMapValueObject)"),
     })
     void checkCollectionObject(CollectionObject collectionObject);
@@ -44,7 +44,7 @@ public interface FeaturesValidator {
     void validateMapValueObject(MapValueObject mapValueObject);
 
     @Validate(nullableMessage = "ObjectWithManyNumbers must not be null",
-            value = @Field(type = Number.class, operation = "greaterThanOrEquals(2)")
+            value = @Field(type = Number.class, operation = "min(2)")
     )
     void validateObjectsWithManyNumbers(ObjectWithManyNumbers objectWithManyNumbers);
 

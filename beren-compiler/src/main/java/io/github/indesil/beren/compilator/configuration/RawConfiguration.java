@@ -4,12 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RawConfiguration {
-    private Map<String, OperationConfig> operationsMappings;
+    private Map<String, OperationConfig> operationsMappings = new HashMap<>();
 
     Map<String, OperationConfig> getOperationsMappings() {
-        if(operationsMappings == null) {
-            operationsMappings = new HashMap<>();
-        }
         return operationsMappings;
     }
 

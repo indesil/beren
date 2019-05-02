@@ -4,12 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BerenConfig {
-    private Map<String, OperationConfig> operationsMappings;
+    private Map<String, OperationConfig> operationsMappings = new HashMap<>();
 
     public Map<String, OperationConfig> getOperationsMappings() {
-        if(operationsMappings == null) {
-            operationsMappings = new HashMap<>();
-        }
         return operationsMappings;
     }
 

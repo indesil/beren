@@ -15,7 +15,7 @@ public abstract class FellowshipValidator {
     @Validate(nullable = false,
             nullableMessage = "Fellowship was not assembled! Is it all lost already?",
             value = {
-            @Field(name = "heroes", operation = "notEmptyCollection"),
+            @Field(name = "heroes", operation = "notEmpty"),
             @Field(name = "heroes", operation = "#forEachValue(checkMember)"),
             @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Balrog', 'Gollum']))",
                     message = "Hey! Where did these things come from???"),
@@ -31,8 +31,8 @@ public abstract class FellowshipValidator {
 
     @Validate(value = {
             @Field(names = {"name", "homeland", "weapon"}, operation = "notNull", message = "Have you forgotten something like %{paramName}?"),
-            @Field(type = Integer.class, operation = "greaterThan(0)"),
-            @Field(name = "age", operation = "greaterThan(18)", message = "You must be adult to go for adventure!"),
+            @Field(type = Integer.class, operation = "min(0)"),
+            @Field(name = "age", operation = "min(18)", message = "You must be adult to go for adventure!"),
             @Field(name = "race", operation = "spiesCheck", message = "There is a Sauron spy in our team!"),
     })
     abstract void checkMember(Hero hero);

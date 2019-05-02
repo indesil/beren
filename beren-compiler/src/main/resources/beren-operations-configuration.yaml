@@ -31,20 +31,6 @@ operationsMappings:
     operationCall: io.github.indesil.beren.operations.NumberOperations.between(this, min, max)
     defaultMessage: "{io.github.beren.validator.constraints.Between.message}"
 
-   ##to be removed
-  greaterThan(var):
-    operationCall: io.github.indesil.beren.operations.Operations.greaterThan(this, var)
-    defaultMessage: "%{paramName} must be greater than %{var}"
-  greaterThanOrEquals(var):
-    operationCall: io.github.indesil.beren.operations.Operations.greaterThanOrEquals(this, var)
-    defaultMessage: "%{paramName} must be greater or equal to %{var}"
-  lessThan(var):
-    operationCall: io.github.indesil.beren.operations.Operations.lessThan(this, var)
-    defaultMessage: "%{paramName} must be less than %{var}"
-  lessThanOrEquals(var):
-    operationCall: io.github.indesil.beren.operations.Operations.lessThanOrEquals(this, var)
-    defaultMessage: "%{paramName} must be less or equal to %{var}"
-
   ### OBJECTS ###
   "null":
     operationCall: java.util.Objects.isNull(this)
@@ -58,25 +44,6 @@ operationsMappings:
   neitherOf(array):
     operationCall: io.github.indesil.beren.operations.SequenceOperations.neitherOf(this, array)
     defaultMessage: "{io.github.beren.validator.constraints.NeitherOf.message}"
-  ## to remove
-  isNull:
-    operationCall: java.util.Objects.isNull(this)
-    defaultMessage: "{javax.validation.constraints.NotNull.message}"
-  equals(var):
-    operationCall: java.util.Objects.equals(this, var)
-    defaultMessage: "%{paramName} must be equal to %{var}"
-  notEquals(var):
-    operationCall: io.github.indesil.beren.operations.Operations.notEquals(this, var)
-    defaultMessage: "%{paramName} must be not equal to %{var}"
-
-  ### COLLECTIONS ###
-  ### to be removed ###
-  emptyCollection:
-    operationCall: org.apache.commons.collections4.CollectionUtils.isEmpty(this)
-    defaultMessage: "Collection %{paramName} must be empty!"
-  notEmptyCollection:
-    operationCall: org.apache.commons.collections4.CollectionUtils.isNotEmpty(this)
-    defaultMessage: "Collection %{paramName} must not be empty!"
 
   ### BOOLEANS ###
   assertTrue:
@@ -127,11 +94,3 @@ operationsMappings:
   pastOrPresent:
     operationCall:  io.github.indesil.beren.operations.futureOrPresent.pastOrPresent(this)
     defaultMessage: "{javax.validation.constraints.PastOrPresent.message}"
-
-  ### to be removed ###
-  emptyString:
-    operationCall: org.apache.commons.lang3.StringUtils.isEmpty(this)
-    defaultMessage: "%{paramName} must be empty!"
-  notEmptyString:
-    operationCall: org.apache.commons.lang3.StringUtils.isNotEmpty(this)
-    defaultMessage: "%{paramName} must not be empty!"
