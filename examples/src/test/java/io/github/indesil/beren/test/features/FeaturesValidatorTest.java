@@ -133,7 +133,7 @@ class FeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> featuresValidator.checkComplexObject(complexObject))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be %s!", invalidField, expectedFieldValue);
+                .hasMessage("%s must be %s", invalidField, expectedFieldValue);
     }
 
     @Test
@@ -167,7 +167,7 @@ class FeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> featuresValidator.checkComplexObject(complexObject))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be greater or equal to 2", invalidFieldName);
+                .hasMessage("%s must be greater than or equal to 2", invalidFieldName);
     }
 
     @ParameterizedTest

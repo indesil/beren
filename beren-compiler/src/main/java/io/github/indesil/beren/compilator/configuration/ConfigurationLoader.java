@@ -1,54 +1,66 @@
 package io.github.indesil.beren.compilator.configuration;
 
 import io.github.indesil.beren.compilator.parser.PlaceHolders;
-import org.yaml.snakeyaml.Yaml;
 import io.github.indesil.beren.compilator.utils.OperationUtils;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import static io.github.indesil.beren.compilator.utils.OperationUtils.strapFromParams;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static io.github.indesil.beren.compilator.utils.OperationUtils.strapFromParams;
 
 public class ConfigurationLoader {
-    private static final String DEFAULT_CONFIG = "beren-default-configuration.yaml";
-    private static final String CUSTOM_CONFIG = "beren-configuration.yaml";
+    private static final String OPERATIONS_CONFIG = "beren-operations-configuration.yaml";
+    private static final String DEFAULT_VALIDATION_MESSAGES = "defaults/ValidationMessages.properties";
+    private static final String CUSTOM_VALIDATION_MESSAGES = "ValidationMessages.properties";
 
     public static BerenConfig loadConfigurations() {
-        Yaml yaml = new Yaml();
-        BerenConfig defaultConfig = loadConfig(yaml, DEFAULT_CONFIG);
-        BerenConfig customConfig = loadConfig(yaml, CUSTOM_CONFIG);
-
-        return mergeConfigs(defaultConfig, customConfig);
-    }
-
-    private static BerenConfig loadConfig(Yaml yaml, String fileName) {
         try (InputStream inputStream = ConfigurationLoader.class
                 .getClassLoader()
-                .getResourceAsStream(fileName)) {
+                .getResourceAsStream(OPERATIONS_CONFIG)) {
             if(inputStream != null) {
-                return createConfiguration(yaml.loadAs(inputStream, RawConfiguration.class));
+                return createConfiguration(new Yaml().loadAs(inputStream, RawConfiguration.class));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return null;
+        throw new IllegalArgumentException("Could not load beren configuration!");
     }
 
     private static BerenConfig createConfiguration(RawConfiguration rawConfiguration) {
         Map<String, OperationConfig> mappings = new HashMap<>(rawConfiguration.getOperationsMappings().size());
-
+        Properties validationMessages = loadValidationMessages();
         for (Map.Entry<String, OperationConfig> rawConf : rawConfiguration.getOperationsMappings().entrySet()) {
             validateConfig(rawConf);
             String key = strapFromParams(rawConf.getKey());
-            tryPutNewConfiguration(mappings, key, formatOperationConfig(rawConf));
+            tryPutNewConfiguration(mappings, key, formatOperationConfig(rawConf, validationMessages));
         }
         return new BerenConfig().withOperationsMappings(mappings);
+    }
+
+    private static Properties loadValidationMessages() {
+        try(InputStream defaultValidationMessagesStream = getResourcesAsStream(DEFAULT_VALIDATION_MESSAGES);
+            InputStream customValidationMessagesStream = getResourcesAsStream(CUSTOM_VALIDATION_MESSAGES)) {
+
+            Properties properties = new Properties();
+            properties.load(defaultValidationMessagesStream);
+            if(customValidationMessagesStream != null) {
+                properties.load(customValidationMessagesStream);
+            }
+            return properties;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error while loading validation messages", e);
+        }
+    }
+
+    private static InputStream getResourcesAsStream(String resourceName) {
+        return ConfigurationLoader.class.getClassLoader().getResourceAsStream(resourceName);
     }
 
     private static void validateConfig(Map.Entry<String, OperationConfig> operationConfig) {
@@ -61,15 +73,16 @@ public class ConfigurationLoader {
         }
     }
 
-    private static void tryPutNewConfiguration(Map<String, OperationConfig> mappings, String key, OperationConfig operationConfig) {
-        OperationConfig previousEntry = mappings.put(key, operationConfig);
-        if(previousEntry != null) {
-            throw new IllegalArgumentException(format("Duplicated mapping configuration for operation: %s", key));
-        }
+    private static OperationConfig formatOperationConfig(Map.Entry<String, OperationConfig> entry, Properties validationMessages) {
+        return entry.getValue()
+                .withDefaultMessage(determineDefaultMessage(entry, validationMessages))
+                .withArgs(listOfArgs(entry));
     }
 
-    private static OperationConfig formatOperationConfig(Map.Entry<String, OperationConfig> entry) {
-        return entry.getValue().withArgs(listOfArgs(entry));
+    private static String determineDefaultMessage(Map.Entry<String, OperationConfig> entry, Properties validationMessages) {
+        String defaultMessage = entry.getValue().getDefaultMessage();
+        String propertyKeyWithoutBraces = defaultMessage.substring(1, defaultMessage.length() - 1);
+        return validationMessages.getProperty(propertyKeyWithoutBraces);
     }
 
     private static List<String> listOfArgs(Map.Entry<String, OperationConfig> entry) {
@@ -96,16 +109,10 @@ public class ConfigurationLoader {
         }
     }
 
-    private static BerenConfig mergeConfigs(BerenConfig defaultConfig, BerenConfig customConfig) {
-        if(customConfig == null) {
-            return defaultConfig;
+    private static void tryPutNewConfiguration(Map<String, OperationConfig> mappings, String key, OperationConfig operationConfig) {
+        OperationConfig previousEntry = mappings.put(key, operationConfig);
+        if(previousEntry != null) {
+            throw new IllegalArgumentException(format("Duplicated mapping configuration for operation: %s", key));
         }
-        BerenConfig berenConfig = new BerenConfig();
-        //!!! nie ma juz walidacji ze ktos zdefiniowal sobie 2 razy ten sam wpis!!!!
-        //!!!! to znaczy ze between(a) w custom bedzie napdpisywal ten z efault between(a, b)
-        berenConfig.getOperationsMappings().putAll(defaultConfig.getOperationsMappings());
-        berenConfig.getOperationsMappings().putAll(customConfig.getOperationsMappings());
-
-        return berenConfig;
     }
 }

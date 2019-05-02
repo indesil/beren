@@ -52,7 +52,7 @@ Let's add some validation method.
  
 ```java
 @Validate(nullable = false, value = {
-    @Field(name = "heroes", operation = "notEmptyCollection")
+    @Field(name = "heroes", operation = "notEmpty")
 })
 abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
 ```
@@ -97,77 +97,69 @@ public class FellowshipValidatorImplBeren_ extends FellowshipValidator {
 ```
 As we can see messages are quite of of our project scope. 
 Let's change them, but first a few words about `@Field` annotation used in example
-`name = "heroes", operation = "notEmptyCollection"`
+`name = "heroes", operation = "notEmpty"`
 
 For now there is only single field we want to validate and it's defined by its name.
 Beren will try to find this field by getter in this case `getHeroes()`.
-For this field we want to perform `notEmptyCollection` operation. 
+For this field we want to perform `notEmpty` operation. 
 For your convenience every operation you use must check if field is valid, beren will negate value for you.
 And therefore in generated code 
 ```java
-if (!CollectionUtils.isNotEmpty(fellowshipOfTheRing.getHeroes()))
+if (!SequenceOperations.isNotEmpty(fellowshipOfTheRing.getHeroes()))
 ```   
-You may now ask - Hey! Where did that `!CollectionUtils.isNotEmpty()` came from!?
+You may now ask - Hey! Where did that `!SequenceOperations.isNotEmpty()` came from!?
 There are three sources of validation method:
 - Method annotated with `@Validate`
 - Method already implemented in validator class
-- Method defined in beren-configuration.yaml
+- Operation config defined in beren-operations-configuration.yaml
 
 First two will be discussed later, for now let's focus on configuration file.
-In `beren-compiler` module there is a file [beren-default-configuration.yaml](beren-compiler/src/main/resources/beren-default-configuration.yaml)
+In `beren-compiler` module there is a file [beren-operations-configuration.yaml](beren-compiler/src/main/resources/beren-operations-configuration.yaml)
 containing default operation mappings.
 ```yaml
-between(a,b):
-    operationCall: io.github.indesil.beren.operations.Operations.between(this, a, b)
-    defaultMessage: "%{paramName} must be between %{a} and %{b}"
-notEmptyCollection:
-    operationCall: org.apache.commons.collections4.CollectionUtils.isNotEmpty(this)
-    defaultMessage: "Collection %{paramName} must not be empty!"
+between(min, max):
+    operationCall: io.github.indesil.beren.operations.NumberOperations.between(this, min, max)
+    defaultMessage: "{io.github.beren.validator.constraints.Between.message}"
+notEmpty:
+    operationCall: io.github.indesil.beren.operations.SequenceOperations.isNotEmpty(this)
+    defaultMessage: "{javax.validation.constraints.NotEmpty.message}"
 ```       
-Important notice:
-- Operation class call must be any static method on class path that returns boolean.
-For example if may use your own implementation of `notEmptyCollection` 
-entry may look like `my.package.MyUtils.isNotEmpty(this)`   
-- Operation key must be unique by its name, therefore arguments overloading is not allowed.
-- Operation arguments can be used as place holders in message as shown above.
+Important notice:   
+- Operation key is unique by its name, therefore arguments overloading is provided by operation call class.
+- Operation arguments are be used as place holders in message as shown above.
 - `this` argument indicate object that is being validated for example `fellowshipOfTheRing.getHeroes()`. 
-Definition must contains `this` otherwise it's pointless.
-- Single operation key may refer to multiple overloaded methods 
-but there is no type validation. For example `Operations.lessThan(this, a)` might be pointing at
-`Operations.lessThan(Number, int)` and `Operations.lessThan(Number, double)`.
-It will be determined by java compiler during source compilation.
+Definition always contains `this` otherwise it's pointless.
+- `defaultMessage` refers to property from which string template will be taken. 
+Please check file [ValidationMessages](beren-compiler/src/main/resources/defaults/ValidationMessages.properties) to see defaults.
 
 Let's replace nullable message and notEmpty message to fit our project.
 ```java
 @Validate(nullable = false,
     nullableMessage = "Fellowship was not assembled! Is it all lost already?",
     value = {
-    @Field(name = "heroes", operation = "notEmptyCollection", message = "The ring must be destroyed! So... anyone volunteer?")
+    @Field(name = "heroes", operation = "notEmpty", message = "The ring must be destroyed! So... anyone volunteer?")
 })
 abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
 ``` 
 `@Field(message)` always overrides default message configured for operation. 
-Another way to change `notEmptyCollection` default message is to create
-`beren-configuration.yaml` in `resources` folder and then add entry   
-```yaml
-operationsMappings:
-  notEmptyCollection:
-    operationCall: org.apache.commons.collections4.CollectionUtils.isNotEmpty(this)
-    defaultMessage: "My own default message for empty collection error - %{paramName} must not be empty!"
-```     
-Both `operationCall` and `defaultMessage` must be given! Compilation output may looks like this
+Another way to change `notEmpty` default message is to create
+`ValidationMessages.properties` in `resources` folder and then add entry
+```properties
+javax.validation.constraints.NotEmpty.message=My own default message for empty collection error - %{paramName} must not be empty!
+```        
+Compilation output may looks like this
 ```java
 if(fellowshipOfTheRing == null) {
   throw new ValidationException("Fellowship was not assembled! Is it all lost already?");
 }
 // with configuration override
-if(!Operations.notEmpty(fellowshipOfTheRing.getHeroes())) {
+if(!SequenceOperations.isNotEmpty(fellowshipOfTheRing.getHeroes())) {
   throw new ValidationException("My own default message for empty collection error - `heroes` must not be empty!");
 }
 ``` 
 or with message override
 ```java
-if(!Operations.notEmpty(fellowshipOfTheRing.getHeroes())) {
+if(!SequenceOperations.isNotEmpty(fellowshipOfTheRing.getHeroes())) {
   throw new ValidationException("The ring must be destroyed! So... anyone volunteer?");
 }
 ```
@@ -186,8 +178,8 @@ Let's add validation for each hero.
 ```java
 @Validate(value = {
     @Field(names = {"name", "homeland", "weapon"}, operation = "notNull", message = "Have you forgotten something like %{paramName}?"),
-    @Field(type = Integer.class, operation = "greaterThan(0)"),
-    @Field(name = "age", operation = "greaterThan(18)", message = "You must be adult to go for adventure!"),
+    @Field(type = Integer.class, operation = "min(0)"),
+    @Field(name = "age", operation = "min(18)", message = "You must be adult to go for adventure!"),
     @Field(name = "race", operation = "spiesCheck", message = "There is a Sauron spy in our team!"),
 })
 abstract void checkMember(Hero hero);
@@ -197,22 +189,22 @@ Important notice:
  but without need of defining `@Field` for each of them.
 - `type` Allows to apply `operation` for every field that is assignable to given Class.
 It means that for Integer.class every field of type int.class 
-and Integer.class will be validated with operation `greaterThan(0)`. Please make notice that 
+and Integer.class will be validated with operation `min(0)`. Please make notice that 
 if you use `Object.class` every field will apply since everything can be assigned to Object type!
 - If multiple `@Field` definitions applies for one field then multiple validations 
 will be generated for that field! Take a look at generated code for
 `type=Integer.class` and `name=age` which is also Integer.
 ```java
-if(!Operations.greaterThan(hero.getAge(), 0)) {
-  throw new ValidationException("age must be greater than 0");
+if(!NumberOperations.min(hero.getAge(), 0)) {
+  throw new ValidationException("age must be greater than or equal to 0");
 }
-if(!Operations.greaterThan(hero.getHeight(), 0)) {
-  throw new ValidationException("height must be greater than 0");
+if(!NumberOperations.min(hero.getHeight(), 0)) {
+  throw new ValidationException("height must be greater than or equal to 0");
 }
-if(!Operations.greaterThan(hero.getWeight(), 0)) {
-  throw new ValidationException("weight must be greater than 0");
+if(!NumberOperations.min(hero.getWeight(), 0)) {
+  throw new ValidationException("weight must be greater or euqal to 0");
 }
-if(!Operations.greaterThan(hero.getAge(), 18)) {
+if(!NumberOperations.min(hero.getAge(), 18)) {
   throw new ValidationException("You must be adult to go for adventure!");
 }
 ```
@@ -231,7 +223,7 @@ Let's finish our validator by adding all of the rest validation definitions
 @Validate(nullable = false,
     nullableMessage = "Fellowship was not assembled! Is it all lost already?",
     value = {
-    @Field(name = "heroes", operation = "notEmptyCollection"),
+    @Field(name = "heroes", operation = "notEmpty"),
     @Field(name = "heroes", operation = "#forEachValue(checkMember)"),
     @Field(name = "heroesStuff", operation = "#forEachKey(neitherOf(['Saruman', 'Balrog', 'Gollum']))", message = "Hey! Where did these things come from???"),
     @Field(name = "heroesStuff", operation = "#forEachValue(isThisGoodStuff)", message = "I think we need to check our supplies before leaving..."),
@@ -245,8 +237,8 @@ boolean isThisGoodStuff(Inventory inventory) {
 
 @Validate(value = {
     @Field(names = {"name", "homeland", "weapon"}, operation = "notNull", message = "Have you forgotten something like %{paramName}?"),
-    @Field(type = Integer.class, operation = "greaterThan(0)"),
-    @Field(name = "age", operation = "greaterThan(18)", message = "You must be adult to go for adventure!"),
+    @Field(type = Integer.class, operation = "min(0)"),
+    @Field(name = "age", operation = "min(18)", message = "You must be adult to go for adventure!"),
     @Field(name = "race", operation = "spiesCheck", message = "There is a Sauron spy in our team!"),
 })
 abstract void checkMember(Hero hero);

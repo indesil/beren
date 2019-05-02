@@ -6,33 +6,6 @@ import javax.lang.model.element.ExecutableElement;
 import java.util.List;
 import java.util.Map;
 
-//neitherOf(a):
-//    operationCall: Operations.neitherOf(this, a)
-//    defaultMessage: "%{paramName} must be neither of %{a}"
-//  greaterThan(var):
-//    operationCall: Operations.greaterThan(this, var)
-//    defaultMessage: "%{paramName} must be bigger than %{var}"
-//  between(a,b):
-//    operationCall: Operations.between(this, a, b)
-//    defaultMessage: "%{paramName} must be between %{a} and %{b}"
-//  notNull:
-//    operationCall: java.util.Objects.nonNull(this)
-//    defaultMessage: "%{paramName} must not be null!"
-//  notEmpty:
-//    operationCall: org.apache.commons.lang3.StringUtils.isNotEmpty(this)
-//    defaultMessage: "%{paramName} must not be empty"
-//
-//    @Validate({
-//    @Field(type = String.class, operation = "notEmpty"),
-//    @Field(type = Double.class, operation = "greaterThan(0)"),
-//    //jezeli to names bylo by np type to wtedy musimy przyjac array[] nie wiadomo czy w przypadku typow tez?
-//    // a moze i to i to?
-//    //@Field(names = {"paymentForm", "paid"}, operation = "myCustomInlineValidation", message = "Cash was not paid! Please check variable ${path}"),
-//    @Field(name = "paymentForm", operation = "myCustomInlineValidation", message = "myCustomInlineValidation!"),
-//    @Field(name = "customer", operation = "validateCustomer")
-//  })
-
-
 public class FieldValidationDefinition {
     private String errorMessageTemplate;
     private String methodName;

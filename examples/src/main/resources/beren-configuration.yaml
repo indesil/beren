@@ -1,4 +1,0 @@
-operationsMappings:
-  notEmptyCollection:
-    operationCall: org.apache.commons.collections4.CollectionUtils.isNotEmpty(this)
-    defaultMessage: "My own default message for empty collection error - %{paramName} must not be empty!"
