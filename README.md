@@ -1,7 +1,7 @@
 Beren
 ========
 
-`Beren` is a Java bean validation generator able to generate validators classes at compilation time!
+`Beren` is a Java static bean validation generator able to generate validators classes at compilation time!
 Beren is still under development phase!      
 
 ## How does it works?
