@@ -76,7 +76,7 @@ class FeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> featuresValidator.checkComplexObject(complexObject))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("integerField1 must be between 0 and 5");
+                .hasMessage("integerField1 must be between 0 and 5 - test override");
     }
 
     @Test

@@ -2,9 +2,53 @@ package io.github.indesil.beren.test.objects;
 
 import io.github.indesil.beren.test.features.model.*;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 public class FeaturesTestObjects {
+
+    public static BooleanFeaturesModel booleanFeaturesModel(boolean valueToSet) {
+        return new BooleanFeaturesModel()
+                .setBooleanWrapper(valueToSet)
+                .setPrimitiveBoolean(valueToSet);
+    }
+
+    public static ObjectFeaturesModel objectFeaturesModel() {
+        return new ObjectFeaturesModel()
+                .setList(new ArrayList<>())
+                .setMap(new HashMap<>())
+                .setIntegerWrapper(1)
+                .setLongWrapper(10L)
+                .setDoubleWrapper(100.5d)
+                .setObject(new Object())
+                .setSet(new HashSet<>())
+                .setString("abc");
+    }
+
+    static NumberFeaturesModel numberFeaturesObject(long fieldsValue) {
+        return new NumberFeaturesModel()
+                .setPrimitiveInt((int) fieldsValue)
+                .setWrapperInteger((int) fieldsValue)
+                .setPrimitiveShort((short) fieldsValue)
+                .setWrapperShort((short) fieldsValue)
+                .setPrimitiveFloat((float) fieldsValue)
+                .setWrapperFloat((float) fieldsValue)
+                .setPrimitiveDouble(fieldsValue)
+                .setWrapperDouble((double) fieldsValue)
+                .setPrimitiveLong(fieldsValue)
+                .setWrapperLong(fieldsValue)
+                .setPrimitiveByte((byte) fieldsValue)
+                .setWrapperByte((byte) fieldsValue)
+                .setBigDecimal(new BigDecimal(fieldsValue))
+                .setBigInteger(new BigInteger("" + fieldsValue))
+                .setBigDecimalChars("" + fieldsValue)
+                .setLastModifiedValueDescription("all fields value ", fieldsValue);
+    }
 
     public static ComplexObject validComplexObject() {
         return createComplexObject().setComplexObjectField(createComplexObject());
@@ -43,11 +87,11 @@ public class FeaturesTestObjects {
 
     public static ObjectWithManyStrings validObjectWithManyStrings() {
         return new ObjectWithManyStrings()
-                    .setStringField1(randomAlphabetic(2) + "X'YZ" + randomAlphabetic(2))
-                    .setStringField2(randomAlphabetic(2) + "X'YZ" + randomAlphabetic(2))
-                    .setStringField3(randomAlphabetic(2) + "X'YZ" + randomAlphabetic(2))
-                    .setStringField4(randomAlphabetic(2) + "X'YZ" + randomAlphabetic(2))
-                    .setNotAString((short) 2);
+                .setStringField1(randomAlphabetic(2) + "X'YZ" + randomAlphabetic(2))
+                .setStringField2(randomAlphabetic(2) + "X'YZ" + randomAlphabetic(2))
+                .setStringField3(randomAlphabetic(2) + "X'YZ" + randomAlphabetic(2))
+                .setStringField4(randomAlphabetic(2) + "X'YZ" + randomAlphabetic(2))
+                .setNotAString((short) 2);
     }
 
     private static MapValueObject validMapValueObject() {

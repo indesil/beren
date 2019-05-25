@@ -5,7 +5,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Field {
-    //! to powinien byc choice! dodac waldiacje!
+    //! this should be choice! - add validation!
     String name() default "";
     String[] names() default {};
     Class type() default Void.class;

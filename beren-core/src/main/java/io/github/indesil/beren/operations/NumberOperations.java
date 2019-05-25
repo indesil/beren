@@ -16,8 +16,12 @@ public class NumberOperations {
         return number == null || number.longValue() >= value;
     }
 
-    public static boolean min(Number number, double value) {
-        return number == null || number.doubleValue() >= value;
+    public static boolean min(Float number, long value) {
+        return number == null || number >= value;
+    }
+
+    public static boolean min(Double number, long value) {
+        return number == null || number >= value;
     }
 
     public static boolean max(BigInteger number, long value) {
@@ -32,8 +36,12 @@ public class NumberOperations {
         return number == null || number.longValue() <= value;
     }
 
-    public static boolean max(Number number, double value) {
-        return number == null || number.doubleValue() <= value;
+    public static boolean max(Float number, long value) {
+        return number == null || number <= value;
+    }
+
+    public static boolean max(Double number, long value) {
+        return number == null || number <= value;
     }
 
     public static boolean decimalMin(BigInteger number, String decimal, boolean inclusive) {
@@ -123,7 +131,15 @@ public class NumberOperations {
     }
 
     public static boolean negative(Number number) {
-        return number == null || number.doubleValue() < 0;
+        return number == null || number.longValue() < 0;
+    }
+
+    public static boolean negative(Float number) {
+        return number == null || number < 0.0f;
+    }
+
+    public static boolean negative(Double number) {
+        return number == null || number < 0.0;
     }
 
     public static boolean negative(BigDecimal bigDecimal) {
@@ -138,6 +154,14 @@ public class NumberOperations {
         return number == null || number.longValue() <= 0;
     }
 
+    public static boolean negativeOrZero(Float number) {
+        return number == null || number <= 0.0f;
+    }
+
+    public static boolean negativeOrZero(Double number) {
+        return number == null || number <= 0.0;
+    }
+
     public static boolean negativeOrZero(BigDecimal bigDecimal) {
         return bigDecimal == null || bigDecimal.signum() <= 0;
     }
@@ -147,7 +171,15 @@ public class NumberOperations {
     }
 
     public static boolean positive(Number number) {
-        return number == null || number.doubleValue() == 1;
+        return number == null || number.longValue() > 0;
+    }
+
+    public static boolean positive(Float number) {
+        return number == null || number > 0.0f;
+    }
+
+    public static boolean positive(Double number) {
+        return number == null || number > 0.0;
     }
 
     public static boolean positive(BigDecimal bigDecimal) {
@@ -160,6 +192,14 @@ public class NumberOperations {
 
     public static boolean positiveOrZero(Number number) {
         return number == null || number.doubleValue() >= 0;
+    }
+
+    public static boolean positiveOrZero(Float number) {
+        return number == null || number >= 0.0f;
+    }
+
+    public static boolean positiveOrZero(Double number) {
+        return number == null || number >= 0.0;
     }
 
     public static boolean positiveOrZero(BigDecimal bigDecimal) {
@@ -182,6 +222,14 @@ public class NumberOperations {
 
     public static boolean between(Number number, long min, long max) {
         return number == null || (number.intValue() >= min && number.intValue() <= max);
+    }
+
+    public static boolean between(Float number, int min, int max) {
+        return number == null || (number >= min && number <= max);
+    }
+
+    public static boolean between(Double number, int min, int max) {
+        return number == null || (number >= min && number <= max);
     }
 
     public static boolean between(Number number, double min, double max) {
