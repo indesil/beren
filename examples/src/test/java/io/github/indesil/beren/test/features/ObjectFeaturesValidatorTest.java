@@ -21,7 +21,7 @@ class ObjectFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNull(objectFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be null", objectFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be null", objectFeaturesModel.testedFieldName());
     }
 
     @Test
@@ -40,7 +40,7 @@ class ObjectFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNotNull(objectFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must not be null", objectFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must not be null", objectFeaturesModel.testedFieldName());
     }
 
     @Test
@@ -59,7 +59,7 @@ class ObjectFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkOneOf(objectFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be one of (%s)", objectFeaturesModel.getTestedFieldName(), range);
+                .hasMessage("%s must be one of (%s)", objectFeaturesModel.testedFieldName(), range);
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.ObjectValidationArguments#validOneOfValues")
@@ -79,7 +79,7 @@ class ObjectFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNeitherOf(objectFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be neither of (%s)", objectFeaturesModel.getTestedFieldName(), excluded);
+                .hasMessage("%s must be neither of (%s)", objectFeaturesModel.testedFieldName(), excluded);
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.ObjectValidationArguments#validNeitherOfValues")

@@ -21,7 +21,7 @@ class BooleanFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkAssertFalse(booleanFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be false", booleanFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be false", booleanFeaturesModel.testedFieldName());
     }
 
     @Test
@@ -40,7 +40,7 @@ class BooleanFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkAssertTrue(booleanFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be true", booleanFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be true", booleanFeaturesModel.testedFieldName());
     }
 
     @Test

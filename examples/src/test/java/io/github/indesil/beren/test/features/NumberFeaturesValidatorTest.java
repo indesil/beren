@@ -18,7 +18,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesMinMaxValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be greater than or equal to 5", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be greater than or equal to 5", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#invalidMaxValidationArguments")
@@ -27,7 +27,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesMinMaxValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be less than or equal to 100", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be less than or equal to 100", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#validMinMaxValidationArguments")
@@ -50,7 +50,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesBetweenValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be between 5 and 100 - test override", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be between 5 and 100 - test override", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#validMinMaxValidationArguments")
@@ -70,7 +70,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesDigitsValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s numeric value out of bounds (<%d digits>.<%d digits> expected)", numberFeaturesModel.getTestedFieldName(), integer, fraction);
+                .hasMessage("%s numeric value out of bounds (<%d digits>.<%d digits> expected)", numberFeaturesModel.testedFieldName(), integer, fraction);
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#validDigitsValidationArguments")
@@ -93,7 +93,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesPositiveValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be greater than 0", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be greater than 0", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#invalidPositiveValidationArguments")
@@ -102,7 +102,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesPositiveOrZeroValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be greater than or equal to 0", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be greater than or equal to 0", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#validPositiveOrZeroValidationArguments")
@@ -125,7 +125,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesNegativeValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be less than 0", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be less than 0", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#invalidNegativeValidationArguments")
@@ -134,7 +134,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesNegativeOrZeroValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be less than or equal to 0", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be less than or equal to 0", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#validNegativeOrZeroValidationArguments")
@@ -154,7 +154,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesDecimalMinMaxValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be greater than '-50' (inclusive - true)", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be greater than '-50' (inclusive - true)", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#invalidDecimalMaxValidationArguments")
@@ -163,7 +163,7 @@ class NumberFeaturesValidatorTest {
         // when // then
         assertThatThrownBy(() -> validator.checkNumberFeaturesDecimalMinMaxValues(numberFeaturesModel))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("%s must be less than '1.2E+2' (inclusive - false)", numberFeaturesModel.getTestedFieldName());
+                .hasMessage("%s must be less than '1.2E+2' (inclusive - false)", numberFeaturesModel.testedFieldName());
     }
 
     @MethodSource("io.github.indesil.beren.test.objects.NumberValidationArguments#validDecimalMinMaxValidationArguments")

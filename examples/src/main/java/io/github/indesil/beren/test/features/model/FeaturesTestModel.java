@@ -10,7 +10,7 @@ public class FeaturesTestModel<T extends FeaturesTestModel> {
         return (T) this;
     }
 
-    public String getTestedFieldName() {
+    public String testedFieldName() {
         return testedFieldName;
     }
 

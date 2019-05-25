@@ -1,6 +1,5 @@
 package io.github.indesil.beren.test.features.model;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
