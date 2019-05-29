@@ -121,7 +121,7 @@ between(min, max):
     operationCall: io.github.indesil.beren.operations.NumberOperations.between(this, min, max)
     defaultMessage: "{io.github.beren.validator.constraints.Between.message}"
 notEmpty:
-    operationCall: io.github.indesil.beren.operations.SequenceOperations.isNotEmpty(this)
+    operationCall: io.github.indesil.beren.operations.CollectionOperations.isNotEmpty(this)
     defaultMessage: "{javax.validation.constraints.NotEmpty.message}"
 ```       
 Important notice:   

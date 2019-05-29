@@ -1,12 +1,12 @@
 package io.github.indesil.beren.compilator;
 
+import io.github.indesil.beren.annotations.Validator;
 import io.github.indesil.beren.compilator.configuration.BerenConfig;
 import io.github.indesil.beren.compilator.configuration.ConfigurationLoader;
 import io.github.indesil.beren.compilator.parser.DefinitionParser;
 import io.github.indesil.beren.compilator.parser.ValidatorDefinition;
 import io.github.indesil.beren.compilator.utils.ErrorMessages;
 import io.github.indesil.beren.compilator.utils.ProcessingFacade;
-import io.github.indesil.beren.annotations.Validator;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -19,7 +19,7 @@ import javax.tools.Diagnostic;
 import java.util.Optional;
 import java.util.Set;
 
-@SupportedAnnotationTypes({"io.github.indesil.beren.annotations.Validator"})
+@SupportedAnnotationTypes("io.github.indesil.beren.annotations.Validator")
 public class AnnotationProcessor extends AbstractProcessor {
     private DefinitionParser definitionParser;
     private ProcessingFacade processingFacade;
@@ -48,7 +48,7 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if(!processingFacade.successFullConfigInit()) {
+        if (!processingFacade.successFullConfigInit()) {
             return false;
         }
 
@@ -64,7 +64,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     private void generateValidatorCode(Set<? extends Element> validatorElements, RoundEnvironment roundEnv) {
         processingFacade.warning("number of validator classes %s", validatorElements.size());
         Optional<? extends Element> invalidElement = findInvalidAnnotationUsage(validatorElements);
-        if(invalidElement.isPresent()) {
+        if (invalidElement.isPresent()) {
             processingFacade.error("@Validator can only be used on interface or class! Invalid class %s", invalidElement.get().getSimpleName());
             return;
         }
@@ -85,12 +85,11 @@ public class AnnotationProcessor extends AbstractProcessor {
         for (Element typeElement : validatorElements) {
             processingFacade.warning("generating validator for class %s", typeElement.toString());
             ValidatorDefinition validatorDefinition = definitionParser.parse((TypeElement) typeElement);
-            try{
+            try {
                 classCodeGenerator.generateJavaClass(typeElement, validatorDefinition);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
         }
     }

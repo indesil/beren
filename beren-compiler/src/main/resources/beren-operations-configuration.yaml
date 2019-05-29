@@ -39,10 +39,10 @@ operationsMappings:
     operationCall: java.util.Objects.nonNull(this)
     defaultMessage: "{javax.validation.constraints.NotNull.message}"
   oneOf(array):
-    operationCall: io.github.indesil.beren.operations.SequenceOperations.oneOf(this, array)
+    operationCall: io.github.indesil.beren.operations.CollectionOperations.oneOf(this, array)
     defaultMessage: "{io.github.beren.validator.constraints.OneOf.message}"
   neitherOf(array):
-    operationCall: io.github.indesil.beren.operations.SequenceOperations.neitherOf(this, array)
+    operationCall: io.github.indesil.beren.operations.CollectionOperations.neitherOf(this, array)
     defaultMessage: "{io.github.beren.validator.constraints.NeitherOf.message}"
 
   ### BOOLEANS ###
@@ -53,12 +53,12 @@ operationsMappings:
     operationCall: org.apache.commons.lang3.BooleanUtils.isNotTrue(this)
     defaultMessage: "{javax.validation.constraints.AssertFalse.message}"
 
-  ### GENERAL ###
+  ### COLLECTIONS ###
   notEmpty:
-    operationCall: io.github.indesil.beren.operations.SequenceOperations.isNotEmpty(this)
+    operationCall: io.github.indesil.beren.operations.CollectionOperations.isNotEmpty(this)
     defaultMessage: "{javax.validation.constraints.NotEmpty.message}"
   size(min, max):
-    operationCall: io.github.indesil.beren.operations.SequenceOperations.size(this, min, max)
+    operationCall: io.github.indesil.beren.operations.CollectionOperations.size(this, min, max)
     defaultMessage: "{javax.validation.constraints.Size.message}"
 
   ### STRINGS ###
