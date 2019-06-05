@@ -14,6 +14,16 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 public class FeaturesTestObjects {
 
+    public static StringFeaturesModel stringFeaturesModel() {
+        return new StringFeaturesModel()
+            .setNotBlankField(randomString())
+            .setStartsWithField(prefixedRandomString("prefix"))
+            .setEndsWithField(suffixedRandomString("suffix"))
+            .setContainsField(wrappedRandomString("text" ))
+            .setEmailField("test@test.pl")
+            .setPatternField("01.01.1970");
+    }
+
     public static CollectionFeaturesModel collectionFeaturesModel(int collectionsSize) {
         Character[] wrapperCharArray = randomCharWrapperArray(collectionsSize);
         Short[] wrapperShortArray = randomShortWrapperArray(collectionsSize);

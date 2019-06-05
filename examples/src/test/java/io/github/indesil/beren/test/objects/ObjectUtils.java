@@ -75,4 +75,20 @@ class ObjectUtils {
     private static <E> E[] randomArray(int size, Supplier<E> generator, IntFunction<E[]> arrayConstructor) {
         return Stream.generate(generator).limit(size).toArray(arrayConstructor);
     }
+
+    static String randomString() {
+        return randomAlphabetic(WORD_SIZE);
+    }
+
+    static String prefixedRandomString(String prefix) {
+        return prefix + randomAlphabetic(WORD_SIZE);
+    }
+
+    static String suffixedRandomString(String suffix) {
+        return randomAlphabetic(WORD_SIZE) + suffix;
+    }
+
+    static String wrappedRandomString(String text) {
+        return randomAlphabetic(WORD_SIZE) + text + randomAlphabetic(WORD_SIZE);
+    }
 }

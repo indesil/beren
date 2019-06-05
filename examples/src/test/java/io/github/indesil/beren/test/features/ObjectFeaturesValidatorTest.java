@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.regex.Pattern;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -91,5 +93,9 @@ class ObjectFeaturesValidatorTest {
         } catch (ValidationException e) {
             fail("No validation exception should occur!");
         }
+    }
+
+    public static void main(String[] args) {
+        boolean wwwaaatttt = Pattern.compile("^start.*end$", 40).matcher("wwwaaatttt").matches();
     }
 }
