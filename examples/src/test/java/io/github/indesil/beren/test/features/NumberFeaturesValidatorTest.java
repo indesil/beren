@@ -37,7 +37,7 @@ class NumberFeaturesValidatorTest {
         try {
             validator.checkNumberFeaturesMinMaxValues(numberFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -60,7 +60,7 @@ class NumberFeaturesValidatorTest {
         try {
             validator.checkNumberFeaturesBetweenValues(numberFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -80,7 +80,7 @@ class NumberFeaturesValidatorTest {
         try {
             validator.checkNumberFeaturesDigitsValues(numberFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -112,7 +112,7 @@ class NumberFeaturesValidatorTest {
         try {
             validator.checkNumberFeaturesPositiveOrZeroValues(numberFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -144,7 +144,7 @@ class NumberFeaturesValidatorTest {
         try {
             validator.checkNumberFeaturesNegativeOrZeroValues(numberFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -173,7 +173,7 @@ class NumberFeaturesValidatorTest {
         try {
             validator.checkNumberFeaturesDecimalMinMaxValues(numberFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 }

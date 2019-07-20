@@ -63,16 +63,16 @@ operationsMappings:
 
   ### STRINGS ###
   notBlank:
-    operationCall: org.apache.commons.lang3.StringUtils.isNotBlank(this)
+    operationCall: io.github.indesil.beren.operations.StringOperations.isNotBlank(this)
     defaultMessage: "{javax.validation.constraints.NotBlank.message}"
   startsWith(prefix):
-    operationCall: org.apache.commons.lang3.StringUtils.startsWith(this, prefix)
+    operationCall: io.github.indesil.beren.operations.StringOperations.startsWith(this, prefix)
     defaultMessage: "{io.github.beren.validator.constraints.StartsWith.message}"
   endsWith(suffix):
-    operationCall: org.apache.commons.lang3.StringUtils.endsWith(this, suffix)
+    operationCall: io.github.indesil.beren.operations.StringOperations.endsWith(this, suffix)
     defaultMessage: "{io.github.beren.validator.constraints.EndsWith.message}"
   contains(substr):
-    operationCall: org.apache.commons.lang3.StringUtils.contains(this, substr)
+    operationCall: io.github.indesil.beren.operations.StringOperations.contains(this, substr)
     defaultMessage: "{io.github.beren.validator.constraints.Contains.message}"
   email(additionalPattern, flags):
     operationCall: io.github.indesil.beren.operations.Operations.email(this, additionalPattern, flags)
@@ -86,11 +86,11 @@ operationsMappings:
     operationCall:  io.github.indesil.beren.operations.DateOperations.future(this)
     defaultMessage: "{javax.validation.constraints.Future.message}"
   futureOrPresent:
-    operationCall:  io.github.indesil.beren.operations.futureOrPresent.future(this)
+    operationCall:  io.github.indesil.beren.operations.DateOperations.futureOrPresent(this)
     defaultMessage: "{javax.validation.constraints.FutureOrPresent.message}"
   past:
     operationCall:  io.github.indesil.beren.operations.DateOperations.past(this)
     defaultMessage: "{javax.validation.constraints.Past.message}"
   pastOrPresent:
-    operationCall:  io.github.indesil.beren.operations.futureOrPresent.pastOrPresent(this)
+    operationCall:  io.github.indesil.beren.operations.DateOperations.pastOrPresent(this)
     defaultMessage: "{javax.validation.constraints.PastOrPresent.message}"

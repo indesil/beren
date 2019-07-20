@@ -4,7 +4,13 @@ import io.github.indesil.beren.test.features.model.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.*;
+import java.time.chrono.HijrahDate;
+import java.time.chrono.JapaneseDate;
+import java.time.chrono.MinguoDate;
+import java.time.chrono.ThaiBuddhistDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -14,7 +20,29 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 public class FeaturesTestObjects {
 
-    public static StringFeaturesModel stringFeaturesModel() {
+    public static DateFeaturesModel dateFeaturesModel(LocalDateTime dateTime) {
+        Instant instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
+        Date javaDate = Date.from(instant);
+        return new DateFeaturesModel()
+                .setDate(javaDate)
+                .setCalendar(toCalendar(javaDate))
+                .setInstant(instant)
+                .setLocalDate(LocalDate.from(dateTime))
+                .setLocalDateTime(dateTime)
+                .setLocalTime(LocalTime.from(dateTime))
+                .setMonthDay(MonthDay.from(dateTime))
+                .setOffsetDateTime(toOffsetDateTime(dateTime))
+                .setOffsetTime(toOffsetTime(dateTime))
+                .setYear(Year.from(dateTime))
+                .setYearMonth(YearMonth.from(dateTime))
+                .setZonedDateTime(toZonedDateTime(dateTime))
+                .setHijrahDate(HijrahDate.from(dateTime))
+                .setJapaneseDate(JapaneseDate.from(dateTime))
+                .setMinguoDate(MinguoDate.from(dateTime))
+                .setThaiBuddhistDate(ThaiBuddhistDate.from(dateTime));
+    }
+
+    static StringFeaturesModel stringFeaturesModel() {
         return new StringFeaturesModel()
             .setNotBlankField(randomString())
             .setStartsWithField(prefixedRandomString("prefix"))

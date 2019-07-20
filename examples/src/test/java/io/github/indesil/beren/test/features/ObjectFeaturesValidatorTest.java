@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.regex.Pattern;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -32,7 +30,7 @@ class ObjectFeaturesValidatorTest {
         try {
             validator.checkNull(new ObjectFeaturesModel());
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -51,7 +49,7 @@ class ObjectFeaturesValidatorTest {
         try {
             validator.checkNotNull(FeaturesTestObjects.objectFeaturesModel());
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -64,14 +62,17 @@ class ObjectFeaturesValidatorTest {
                 .hasMessage("%s must be one of (%s)", objectFeaturesModel.testedFieldName(), range);
     }
 
-    @MethodSource("io.github.indesil.beren.test.objects.ObjectValidationArguments#validOneOfValues")
+    @MethodSource(value = {
+            "io.github.indesil.beren.test.objects.ObjectValidationArguments#validOneOfValues",
+            "io.github.indesil.beren.test.objects.ObjectValidationArguments#nullValues"
+    })
     @ParameterizedTest
     void shouldAllowValidOneOfValues(ObjectFeaturesModel objectFeaturesModel) {
         // when // then
         try {
             validator.checkOneOf(objectFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -84,18 +85,17 @@ class ObjectFeaturesValidatorTest {
                 .hasMessage("%s must be neither of (%s)", objectFeaturesModel.testedFieldName(), excluded);
     }
 
-    @MethodSource("io.github.indesil.beren.test.objects.ObjectValidationArguments#validNeitherOfValues")
+    @MethodSource(value = {
+            "io.github.indesil.beren.test.objects.ObjectValidationArguments#validNeitherOfValues",
+            "io.github.indesil.beren.test.objects.ObjectValidationArguments#nullValues"
+    })
     @ParameterizedTest
     void shouldAllowValidNeitherOfValues(ObjectFeaturesModel objectFeaturesModel) {
         // when // then
         try {
             validator.checkNeitherOf(objectFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
-    }
-
-    public static void main(String[] args) {
-        boolean wwwaaatttt = Pattern.compile("^start.*end$", 40).matcher("wwwaaatttt").matches();
     }
 }

@@ -23,6 +23,11 @@ public class StringValidationArguments {
     public static Stream<Arguments> validStringValues() {
         return Stream.of(
                 Arguments.of(stringFeaturesModel()),
+                Arguments.of(stringFeaturesModel().setStartsWithField(null)),
+                Arguments.of(stringFeaturesModel().setEndsWithField(null)),
+                Arguments.of(stringFeaturesModel().setContainsField(null)),
+                Arguments.of(stringFeaturesModel().setEmailField(null)),
+                Arguments.of(stringFeaturesModel().setPatternField(null)),
                 Arguments.of(stringFeaturesModel().setStartsWithField("prefix")),
                 Arguments.of(stringFeaturesModel().setEndsWithField("suffix")),
                 Arguments.of(stringFeaturesModel().setContainsField("text"))
@@ -43,6 +48,8 @@ public class StringValidationArguments {
 
     public static Stream<Arguments> validPatternValues() {
         return Stream.of(
+                Arguments.of(stringFeaturesModel().setEmailField(null).setPatternField("start and end")),
+                Arguments.of(stringFeaturesModel().setPatternField(null)),
                 Arguments.of(stringFeaturesModel().setEmailField("aaaa@bbbb.cc").setPatternField("start and end")),
                 Arguments.of(stringFeaturesModel().setEmailField("AAAA@BBBB.CC").setPatternField("START AND END"))
         );

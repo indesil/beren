@@ -102,10 +102,10 @@ public class CollectionOperations {
     }
 
     public static boolean oneOf(Object input, List<Object> expectedObjects) {
-        return expectedObjects.contains(input);
+        return input == null || expectedObjects.contains(input);
     }
 
     public static boolean neitherOf(Object input, List<Object> expectedObjects) {
-        return !expectedObjects.contains(input);
+        return input == null || !expectedObjects.contains(input);
     }
 }

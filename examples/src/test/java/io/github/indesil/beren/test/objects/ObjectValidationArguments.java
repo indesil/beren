@@ -89,4 +89,21 @@ public class ObjectValidationArguments {
                 Arguments.of(objectFeaturesModel().setString("xyz"))
         );
     }
+
+    public static Stream<Arguments> nullValues() {
+        return Stream.of(
+                Arguments.of(objectFeaturesModel().setIntegerWrapper(null)),
+                Arguments.of(objectFeaturesModel().setIntegerWrapper(null)),
+                Arguments.of(objectFeaturesModel().setIntegerWrapper(null)),
+                Arguments.of(objectFeaturesModel().setLongWrapper(null)),
+                Arguments.of(objectFeaturesModel().setLongWrapper(null)),
+                Arguments.of(objectFeaturesModel().setLongWrapper(null)),
+                Arguments.of(objectFeaturesModel().setDoubleWrapper(null)),
+                Arguments.of(objectFeaturesModel().setDoubleWrapper(null)),
+                Arguments.of(objectFeaturesModel().setDoubleWrapper(null)),
+                Arguments.of(objectFeaturesModel().setString(null)),
+                Arguments.of(objectFeaturesModel().setString(null)),
+                Arguments.of(objectFeaturesModel().setString(null))
+        );
+    }
 }

@@ -29,7 +29,7 @@ class StringFeaturesValidatorTest {
         try {
             validator.checkStringFeatures(stringFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -49,7 +49,7 @@ class StringFeaturesValidatorTest {
         try {
             validator.checkPatternsFeatures(stringFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 }

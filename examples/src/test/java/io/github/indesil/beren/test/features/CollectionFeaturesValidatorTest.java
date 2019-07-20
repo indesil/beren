@@ -33,7 +33,7 @@ class CollectionFeaturesValidatorTest {
         try {
             validator.checkNotEmpty(collectionFeaturesModel(1));
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -59,7 +59,7 @@ class CollectionFeaturesValidatorTest {
         try {
             validator.checkSize(collectionFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 }

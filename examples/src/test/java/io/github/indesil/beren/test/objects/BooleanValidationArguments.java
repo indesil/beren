@@ -15,10 +15,24 @@ public class BooleanValidationArguments {
         );
     }
 
+    public static Stream<Arguments> validAssertFalseValidationArguments() {
+        return Stream.of(
+                Arguments.of(booleanFeaturesModel(false)),
+                Arguments.of(booleanFeaturesModel(false).setBooleanWrapper(null))
+        );
+    }
+
     public static Stream<Arguments> invalidAssertTrueValidationArguments() {
         return Stream.of(
                 Arguments.of(booleanFeaturesModel(true).setBooleanWrapper(false)),
                 Arguments.of(booleanFeaturesModel(true).setPrimitiveBoolean(false))
+        );
+    }
+
+    public static Stream<Arguments> validAssertTrueValidationArguments() {
+        return Stream.of(
+                Arguments.of(booleanFeaturesModel(true)),
+                Arguments.of(booleanFeaturesModel(true).setBooleanWrapper(null))
         );
     }
 }

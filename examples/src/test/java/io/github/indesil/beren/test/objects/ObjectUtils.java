@@ -2,6 +2,9 @@ package io.github.indesil.beren.test.objects;
 
 import org.apache.commons.lang3.RandomUtils;
 
+import java.time.*;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
@@ -90,5 +93,22 @@ class ObjectUtils {
 
     static String wrappedRandomString(String text) {
         return randomAlphabetic(WORD_SIZE) + text + randomAlphabetic(WORD_SIZE);
+    }
+
+    static Calendar toCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
+    static OffsetDateTime toOffsetDateTime(LocalDateTime dateTime) {
+        return dateTime.atOffset(OffsetDateTime.now().getOffset());
+    }
+    static OffsetTime toOffsetTime(LocalDateTime dateTime) {
+        return dateTime.atOffset(OffsetTime.now().getOffset()).toOffsetTime();
+    }
+
+    static ZonedDateTime toZonedDateTime(LocalDateTime dateTime) {
+        return dateTime.atZone(ZoneId.systemDefault());
     }
 }

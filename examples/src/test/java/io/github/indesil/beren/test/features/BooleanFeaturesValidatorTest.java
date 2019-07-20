@@ -24,13 +24,14 @@ class BooleanFeaturesValidatorTest {
                 .hasMessage("%s must be false", booleanFeaturesModel.testedFieldName());
     }
 
-    @Test
-    void shouldAllowValidAssertFalseValues() {
+    @MethodSource("io.github.indesil.beren.test.objects.BooleanValidationArguments#validAssertFalseValidationArguments")
+    @ParameterizedTest
+    void shouldAllowValidAssertFalseValues(BooleanFeaturesModel booleanFeaturesModel) {
         // when // then
         try {
-            validator.checkAssertFalse(booleanFeaturesModel(false));
+            validator.checkAssertFalse(booleanFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 
@@ -43,13 +44,14 @@ class BooleanFeaturesValidatorTest {
                 .hasMessage("%s must be true", booleanFeaturesModel.testedFieldName());
     }
 
-    @Test
-    void shouldAllowValidAssertTrueValues() {
+    @MethodSource("io.github.indesil.beren.test.objects.BooleanValidationArguments#validAssertTrueValidationArguments")
+    @ParameterizedTest
+    void shouldAllowValidAssertTrueValues(BooleanFeaturesModel booleanFeaturesModel) {
         // when // then
         try {
-            validator.checkAssertTrue(booleanFeaturesModel(true));
+            validator.checkAssertTrue(booleanFeaturesModel);
         } catch (ValidationException e) {
-            fail("No validation exception should occur!");
+            fail("No validation exception should occur!", e);
         }
     }
 }

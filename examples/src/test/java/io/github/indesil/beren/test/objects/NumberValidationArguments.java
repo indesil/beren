@@ -52,7 +52,7 @@ public class NumberValidationArguments {
     // min(5)
     // max(100)
     public static Stream<Arguments> validMinMaxValidationArguments() {
-        return Stream.of(
+        return Stream.concat(Stream.of(
                 Arguments.of(numberFeaturesObject(5)),
                 Arguments.of(numberFeaturesObject(50)),
                 Arguments.of(numberFeaturesObject(100)),
@@ -66,7 +66,7 @@ public class NumberValidationArguments {
                 Arguments.of(numberFeaturesObject(50).setWrapperDouble(99.9999999)),
                 Arguments.of(numberFeaturesObject(50).setBigDecimal(new BigDecimal("5.00000000001"))),
                 Arguments.of(numberFeaturesObject(50).setBigDecimal(new BigDecimal("99.9999999999")))
-        );
+        ), nullValues(50));
     }
 
     public static Stream<Arguments> invalidDigitsValidationArguments() {
@@ -95,7 +95,7 @@ public class NumberValidationArguments {
     }
 
     public static Stream<Arguments> validDigitsValidationArguments() {
-        return Stream.of(
+        return Stream.concat(Stream.of(
                 Arguments.of(numberFeaturesObject(30)),
                 Arguments.of(numberFeaturesObject(5)),
                 Arguments.of(numberFeaturesObject(30).setPrimitiveFloat(123.12f)),
@@ -110,7 +110,7 @@ public class NumberValidationArguments {
                 Arguments.of(numberFeaturesObject(30).setBigDecimal(new BigDecimal("12.1"))),
                 Arguments.of(numberFeaturesObject(30).setBigDecimalChars("123.12")),
                 Arguments.of(numberFeaturesObject(30).setBigDecimalChars("1.0"))
-        );
+        ), nullValues(30));
     }
 
     public static Stream<Arguments> invalidPositiveValidationArguments() {
@@ -165,10 +165,10 @@ public class NumberValidationArguments {
     }
 
     public static Stream<Arguments> validPositiveOrZeroValidationArguments() {
-        return Stream.of(
+        return Stream.concat(Stream.of(
                 Arguments.of(numberFeaturesObject(10)),
                 Arguments.of(numberFeaturesObject(0))
-        );
+        ), nullValues(5));
     }
 
     public static Stream<Arguments> invalidNegativeValidationArguments() {
@@ -196,10 +196,10 @@ public class NumberValidationArguments {
     }
 
     public static Stream<Arguments> validNegativeOrZeroValidationArguments() {
-        return Stream.of(
+        return Stream.concat(Stream.of(
                 Arguments.of(numberFeaturesObject(-50)),
                 Arguments.of(numberFeaturesObject(0))
-        );
+        ), nullValues(-50));
     }
 
     //decimalMin(-50, true) -> -50 inclusive
@@ -230,7 +230,7 @@ public class NumberValidationArguments {
     }
 
     public static Stream<Arguments> validDecimalMinMaxValidationArguments() {
-        return Stream.of(
+        return Stream.concat(Stream.of(
                 Arguments.of(numberFeaturesObject(-50)),
                 Arguments.of(numberFeaturesObject(0)),
                 Arguments.of(numberFeaturesObject(119)),
@@ -240,7 +240,7 @@ public class NumberValidationArguments {
                 Arguments.of(numberFeaturesObject(30).setWrapperDouble(119.9999999)),
                 Arguments.of(numberFeaturesObject(30).setBigDecimal(new BigDecimal("119.999999999999999"))),
                 Arguments.of(numberFeaturesObject(30).setBigDecimalChars("119.999999999999999"))
-        );
+        ), nullValues(30));
     }
 
     //decimalMax('1.2E+2', false) -> 120 exclusive
@@ -277,6 +277,20 @@ public class NumberValidationArguments {
                 Arguments.of(numberFeaturesObject(30).setBigInteger(new BigInteger("120"))),
                 Arguments.of(numberFeaturesObject(30).setBigInteger(new BigInteger("121"))),
                 Arguments.of(numberFeaturesObject(30).setBigDecimalChars("1234.123"))
+        );
+    }
+
+    private static Stream<Arguments> nullValues(long fieldsValues) {
+        return Stream.of(
+                Arguments.of(numberFeaturesObject(fieldsValues).setWrapperFloat(null)),
+                Arguments.of(numberFeaturesObject(fieldsValues).setWrapperDouble(null)),
+                Arguments.of(numberFeaturesObject(fieldsValues).setWrapperByte(null)),
+                Arguments.of(numberFeaturesObject(fieldsValues).setWrapperInteger(null)),
+                Arguments.of(numberFeaturesObject(fieldsValues).setWrapperLong(null)),
+                Arguments.of(numberFeaturesObject(fieldsValues).setWrapperShort(null)),
+                Arguments.of(numberFeaturesObject(fieldsValues).setBigInteger(null)),
+                Arguments.of(numberFeaturesObject(fieldsValues).setBigDecimalChars(null)),
+                Arguments.of(numberFeaturesObject(fieldsValues).setBigDecimal(null))
         );
     }
 }
