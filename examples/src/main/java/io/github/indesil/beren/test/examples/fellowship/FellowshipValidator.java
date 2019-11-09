@@ -21,7 +21,7 @@ public abstract class FellowshipValidator {
                     message = "Hey! Where did these things come from???"),
             @Field(name = "heroesStuff", operation = "#forEachValue(isThisGoodStuff)",
                     message = "I think we need to check our supplies before leaving..."),
-            @Field(name = "elrondAdvices", operation = "whatDidElrondSaid")
+            @Field(name = "elrondAdvices", operation = "whatDidElrondSay")
     })
     abstract void checkFellowshipBeforeLeave(FellowshipOfTheRing fellowshipOfTheRing);
 
@@ -45,5 +45,5 @@ public abstract class FellowshipValidator {
     @Validate(value = {
             @Field(pattern = "advice.*", operation = "notNull", message = "Wait! I forgot %{paramName}")
     })
-    abstract void whatDidElrondSaid(VeryImportElrondAdvices advices);
+    abstract void whatDidElrondSay(VeryImportElrondAdvices advices);
 }

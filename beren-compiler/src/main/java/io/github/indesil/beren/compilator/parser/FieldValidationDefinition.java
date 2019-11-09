@@ -12,7 +12,6 @@ public class FieldValidationDefinition {
     private ClassName operationClass;
     private Map<String, String> params;
     private GetterDefinition getterDefinition;
-    private ExecutableElement getterMethod;
     private List<String> paramsOrder;
     private OperationType operationType = OperationType.STATIC_METHOD;
     private IterationType iterationType = IterationType.NONE;
