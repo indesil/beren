@@ -36,11 +36,11 @@ Add maven dependencies to your project
 As Beren uses code generation to create proper validators it is not possible to fully cover Bean Validation 2.0 specification.
 Please look at the following list of supported and unsupported features to make sure if you can and want to use Beren in your project.
 
-##### List of Bean Validation supported features (or to be supported in the future)
+#### List of Bean Validation :heavy_check_mark: supported features (or to be :heavy_plus_sign: supported in the future)
 - :heavy_check_mark: Parsing javax constraints annotations
-- :white_check_mark: Messages internationalization
+- :heavy_plus_sign: Messages internationalization
 
-##### List of features that will be not supported 
+#### List of :x: unsupported features 
 - :x: XML configuration processing
 - :x: javax validation API full support
 ## Usage
