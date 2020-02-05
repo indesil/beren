@@ -42,8 +42,8 @@ Please look at the following list of supported and unsupported features to make 
 - :heavy_plus_sign: Annotation definitions target
     - class / interface (inheritance)
     - field / property
-    - getter method or return value
-    - setter method or setter parameter
+    - getter method / getter method parameter or getter return value
+    - setter method / setter method parameter or setter parameter
     - container element
 - :heavy_plus_sign: Custom annotations and validators
 - :heavy_plus_sign: Support for all javax built-in constraints
@@ -60,6 +60,7 @@ Please look at the following list of supported and unsupported features to make 
 - :x: Annotation definitions target
     - constructors
     - methods other than setter / getter
+    - cross-parameter constraints
 - :x: Constraints payloads
 - :x: @OverridesAttribute
 - :x: Support for custom container types by plugging in additional value extractors 
