@@ -31,6 +31,42 @@ Add maven dependencies to your project
     </dependency>
 </dependencies>
 ```
+
+## Beren and Bean Validation 2.0 list of features
+As Beren uses code generation to create proper validators it is not possible to fully cover Bean Validation 2.0 specification.
+Please look at the following list of supported and unsupported features to make sure if you can and want to use Beren in your project.
+
+### List of Bean Validation :heavy_check_mark: supported features (or to be :heavy_plus_sign: supported in the future)
+- :heavy_plus_sign: Parsing javax constraints annotations
+- :heavy_plus_sign: Messages internationalization
+- :heavy_plus_sign: Annotation definitions target
+    - class / interface (inheritance)
+    - field
+    - getter method / getter return value -> treated as property declaration 
+    - container element
+- :heavy_plus_sign: Custom annotations and validators
+- :heavy_plus_sign: Support for all javax built-in constraints
+- :heavy_plus_sign: Constraints groups
+- :heavy_plus_sign: Support for validating container elements by annotating type arguments of parameterized types:
+    - Cascaded validation of collection types e.g ``` List<@Positive Integer> positiveNumbers ```
+    - Cascaded validation of map types e.g ``` Map<@Valid CustomerType, @Valid Customer> customersByType ```
+    - Support for ``` java.util.Optional ```
+
+### List of :x: unsupported features 
+- :x: XML validation descriptors
+- :x: Message interpolation via the unified expression language
+- :x: Annotation definitions target
+    - constructors
+    - methods other than getter
+    - cross-parameter constraints    
+- :x: Constraints payloads
+- :x: @OverridesAttribute
+- :x: Support for custom container types by plugging in additional value extractors 
+- :x: Support for the property types declared by JavaFX 
+- :x: Integration with Context and Dependency Injection 
+- :x: Method validation 
+- :x: Everything else connected with java bean validation 2.0 not mentioned in supported features section
+
 ## Usage
 Every example can be found in `examples` module
 
