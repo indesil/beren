@@ -41,7 +41,7 @@ Please look at the following list of supported and unsupported features to make 
 - :heavy_plus_sign: Messages internationalization
 - :heavy_plus_sign: Annotation definitions target
     - class / interface (inheritance)
-    - field / property
+    - field
     - getter method / getter return value -> treated as property declaration 
     - container element
 - :heavy_plus_sign: Custom annotations and validators
@@ -51,7 +51,6 @@ Please look at the following list of supported and unsupported features to make 
     - Cascaded validation of collection types e.g ``` List<@Positive Integer> positiveNumbers ```
     - Cascaded validation of map types e.g ``` Map<@Valid CustomerType, @Valid Customer> customersByType ```
     - Support for ``` java.util.Optional ```
-- 
 
 ### List of :x: unsupported features 
 - :x: XML validation descriptors
