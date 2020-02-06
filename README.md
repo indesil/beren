@@ -44,7 +44,9 @@ Please look at the following list of supported and unsupported features to make 
     - field
     - getter method / getter return value -> treated as property declaration 
     - container element
+- :heavy_plus_sign: `@Constraint` parameters `message`, `groups`, `payloads`
 - :heavy_plus_sign: Custom annotations and validators
+    - supported custom annotations targets: FIELD, METHOD, TYPE, TYPE_USE
 - :heavy_plus_sign: Support for all javax built-in constraints
 - :heavy_plus_sign: Constraints groups
 - :heavy_plus_sign: Support for validating container elements by annotating type arguments of parameterized types:
@@ -58,8 +60,8 @@ Please look at the following list of supported and unsupported features to make 
 - :x: Annotation definitions target
     - constructors
     - methods other than getter
-    - cross-parameter constraints    
-- :x: Constraints payloads
+- :x: Cross-parameter constraints `validationAppliesTo`
+- :x: `@Constraint` parameter 
 - :x: @OverridesAttribute
 - :x: Support for custom container types by plugging in additional value extractors 
 - :x: Support for the property types declared by JavaFX 
