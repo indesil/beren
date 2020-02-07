@@ -48,7 +48,7 @@ Please look at the following list of supported and unsupported features to make 
 - :heavy_plus_sign: Custom annotations and validators
     - supported custom annotations targets: FIELD, METHOD, TYPE, TYPE_USE
 - :heavy_plus_sign: Support for all javax built-in constraints
-- :heavy_plus_sign: Constraints groups
+- :heavy_plus_sign: Support for composite constraints
 - :heavy_plus_sign: Support for validating container elements by annotating type arguments of parameterized types:
     - Cascaded validation of collection types e.g ``` List<@Positive Integer> positiveNumbers ```
     - Cascaded validation of map types e.g ``` Map<@Valid CustomerType, @Valid Customer> customersByType ```
