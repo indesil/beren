@@ -33,18 +33,17 @@ Add maven dependencies to your project
 ```
 
 ## Beren and Bean Validation 2.0 list of features
-As Beren uses code generation to create proper validators it is not possible to fully cover Bean Validation 2.0 specification.
+As Beren uses code generation to create proper validators it is not possible to fully implement Bean Validation 2.0 specification.
 Please look at the following list of supported and unsupported features to make sure if you can and want to use Beren in your project.
 
 ### List of Bean Validation :heavy_check_mark: supported features (or to be :heavy_plus_sign: supported in the future)
 - :heavy_plus_sign: Parsing javax constraints annotations
-- :heavy_plus_sign: Messages internationalization
+- :heavy_plus_sign: Basic messages interpolation
 - :heavy_plus_sign: Annotation definitions target
     - class / interface (inheritance)
     - field
     - getter method / getter return value -> treated as property declaration 
     - container element
-- :heave_plus_sign: ConstraintValidatorFactory
 - :heavy_plus_sign: `@Constraint` parameters `message`, `groups`, `payloads`
 - :heavy_plus_sign: Custom annotations and validators
     - supported custom annotations targets: FIELD, METHOD, TYPE, TYPE_USE
@@ -56,13 +55,13 @@ Please look at the following list of supported and unsupported features to make 
     - Support for ``` java.util.Optional ```
 
 ### List of :x: unsupported features 
+- :x: ConstraintValidatorFactory
 - :x: XML validation descriptors
 - :x: Message interpolation via the unified expression language
 - :x: Annotation definitions target
     - constructors
     - methods other than getter
 - :x: Cross-parameter constraints `validationAppliesTo`
-- :x: `@Constraint` parameter 
 - :x: `@SupportedValidationTarget`
 - :x: Value extractors
 - :x: Support for the property types declared by JavaFX 
